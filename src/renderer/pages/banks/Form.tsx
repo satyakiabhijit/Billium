@@ -51,7 +51,7 @@ export const Form: FC<FormProps> = ({ initialData, onSave, onCancel }) => {
           <Grid item xs={12} sm={6}>
             <TextField
               fullWidth
-              label="Account Nickname *"
+              label="Account Nickname"
               value={formData.name || ''}
               onChange={handleChange('name')}
               required

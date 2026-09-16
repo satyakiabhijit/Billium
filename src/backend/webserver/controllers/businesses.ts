@@ -3,7 +3,7 @@ import * as businessesService from '../../shared/services/businesses';
 import { getDb } from './database';
 
 export const initBusinessesController = (app: Express) => {
-  app.get('/api/businesses', async (req: Request, res: Response) => {
+  app.get('/api/businesses', async (_req: Request, res: Response) => {
     const db = getDb();
     if (!db) return res.json({ success: false, error: 'error.databaseNotConnected' });
     const result = await businessesService.getAllBusinesses(db);

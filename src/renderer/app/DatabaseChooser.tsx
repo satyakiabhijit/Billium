@@ -44,13 +44,15 @@ export const DatabaseChooser: FC = () => {
       if (isWebMode()) {
         const result = await api.createSqliteDb(dbName);
         if (result?.success) {
+          localStorage.setItem('billium_db', JSON.stringify({ type: 'sqlite', name: dbName }));
           dispatch(setDbReady(true));
         } else {
           setError(result?.error || 'Failed to create database');
         }
       } else {
         const result = await api.createSqliteDb();
-        if (result?.success) {
+        if (result?.success && (result as any).path) {
+          localStorage.setItem('billium_db', JSON.stringify({ type: 'sqlite', path: (result as any).path }));
           dispatch(setDbReady(true));
         } else {
           setError(result?.error || 'Cancelled');
@@ -70,13 +72,15 @@ export const DatabaseChooser: FC = () => {
       if (isWebMode()) {
         const result = await api.openSqliteDb(dbName);
         if (result?.success) {
+          localStorage.setItem('billium_db', JSON.stringify({ type: 'sqlite', name: dbName }));
           dispatch(setDbReady(true));
         } else {
           setError(result?.error || 'Failed to open database');
         }
       } else {
         const result = await api.openSqliteDb();
-        if (result?.success) {
+        if (result?.success && (result as any).path) {
+          localStorage.setItem('billium_db', JSON.stringify({ type: 'sqlite', path: (result as any).path }));
           dispatch(setDbReady(true));
         } else {
           setError(result?.error || 'Cancelled');
@@ -112,6 +116,7 @@ export const DatabaseChooser: FC = () => {
     try {
       const result = await api.openPostgresDb(pgConfig);
       if (result?.success) {
+        localStorage.setItem('billium_db', JSON.stringify({ type: 'postgres', config: pgConfig }));
         dispatch(setDbReady(true));
       } else {
         setError(result?.error || 'Failed to connect');

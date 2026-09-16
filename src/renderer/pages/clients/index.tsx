@@ -1,4 +1,5 @@
 import { type FC, useState, useMemo } from 'react';
+import { getApi } from '../../shared/api/restApi';
 import { useTranslation } from 'react-i18next';
 import { CRUDPage } from '../../shared/components/layout/crudPage/CRUDPage';
 import { useClientAdd } from '../../shared/hooks/clients/useClientAdd';
@@ -66,6 +67,7 @@ export const ClientsPage: FC = () => {
       isFormMode={isFormMode}
       onSetFormMode={setIsFormMode}
       onAdd={handleAddClick}
+      onExport={() => getApi().exportToXlsx('clients')}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       listComponent={

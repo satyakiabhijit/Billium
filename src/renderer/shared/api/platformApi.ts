@@ -7,6 +7,9 @@ const request = async <T>(url: string, options?: RequestInit): Promise<T> => {
     headers: { 'Content-Type': 'application/json' },
     ...options
   });
+  if (!res.ok) {
+    throw new Error(`API Error: ${res.status} ${res.statusText}`);
+  }
   return res.json();
 };
 
@@ -46,9 +49,16 @@ export interface Api {
 
   // Categories — Phase 2
   getCategories: (filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
+  getCategoryById: (id: number) => Promise<{ success: boolean; data?: unknown }>;
   addCategory: (data: unknown) => Promise<{ success: boolean; data?: number }>;
   updateCategory: (data: unknown) => Promise<{ success: boolean }>;
   deleteCategory: (id: number) => Promise<{ success: boolean }>;
+
+  // Taxes
+  getTaxes: (filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
+  addTax: (data: unknown) => Promise<{ success: boolean; data?: number }>;
+  updateTax: (data: unknown) => Promise<{ success: boolean }>;
+  deleteTax: (id: number) => Promise<{ success: boolean }>;
 
   // Units — Phase 2
   getUnits: (filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
@@ -72,10 +82,17 @@ export interface Api {
   // Invoices — Phase 4
   getInvoices: (filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
   getInvoiceById: (id: number) => Promise<{ success: boolean; data?: unknown }>;
-  addInvoice: (data: unknown) => Promise<{ success: boolean; data?: number }>;
+  addInvoice: (data: unknown) => Promise<{ success: boolean; data?: unknown }>;
   updateInvoice: (data: unknown) => Promise<{ success: boolean }>;
   deleteInvoice: (id: number) => Promise<{ success: boolean }>;
-  getNextSequence: (invoiceType: string) => Promise<{ success: boolean; data?: unknown }>;
+  getNextSequence: (invoiceType: string) => Promise<{ success: boolean; data?: { nextSequence: number; formattedSequence: string } }>;
+
+  // Quotes — Phase 4
+  getQuotes: (filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
+  getQuoteById: (id: number) => Promise<{ success: boolean; data?: unknown }>;
+  addQuote: (data: unknown) => Promise<{ success: boolean; data?: unknown }>;
+  updateQuote: (data: unknown) => Promise<{ success: boolean }>;
+  deleteQuote: (id: number) => Promise<{ success: boolean }>;
 
   // Settings — Phase 2
   getSettings: () => Promise<{ success: boolean; data?: unknown }>;
@@ -153,9 +170,16 @@ export const webApi: Api = {
 
   // Categories
   getCategories: (filter) => request(`/api/categories${filter ? '?filter=' + JSON.stringify(filter) : ''}`),
+  getCategoryById: (id) => request(`/api/categories/${id}`),
   addCategory: (data) => request('/api/categories', { method: 'POST', body: JSON.stringify(data) }),
   updateCategory: (data) => request('/api/categories', { method: 'PUT', body: JSON.stringify(data) }),
   deleteCategory: (id) => request(`/api/categories/${id}`, { method: 'DELETE' }),
+
+  // Taxes
+  getTaxes: (filter) => request(`/api/taxes${filter ? '?filter=' + JSON.stringify(filter) : ''}`),
+  addTax: (data) => request('/api/taxes', { method: 'POST', body: JSON.stringify(data) }),
+  updateTax: (data) => request('/api/taxes', { method: 'PUT', body: JSON.stringify(data) }),
+  deleteTax: (id) => request(`/api/taxes/${id}`, { method: 'DELETE' }),
 
   // Units
   getUnits: (filter) => request(`/api/units${filter ? '?filter=' + JSON.stringify(filter) : ''}`),
@@ -180,13 +204,20 @@ export const webApi: Api = {
   getSettings: () => request('/api/settings'),
   updateSettings: (data) => request('/api/settings', { method: 'PUT', body: JSON.stringify(data) }),
 
-  // Stubs for remaining phases
-  getInvoices: () => Promise.resolve({ success: true, data: [] }),
-  getInvoiceById: () => Promise.resolve({ success: true, data: undefined }),
-  addInvoice: () => Promise.resolve({ success: true }),
-  updateInvoice: () => Promise.resolve({ success: true }),
-  deleteInvoice: () => Promise.resolve({ success: true }),
-  getNextSequence: () => Promise.resolve({ success: true, data: { nextSequence: 1, formattedSequence: '1' } }),
+  // Invoices - Phase 4
+  getInvoices: (filter) => request(`/api/invoices${filter ? '?filter=' + JSON.stringify(filter) : ''}`),
+  getInvoiceById: (id) => request(`/api/invoices/${id}`),
+  addInvoice: (data) => request('/api/invoices', { method: 'POST', body: JSON.stringify(data) }),
+  updateInvoice: (data) => request('/api/invoices', { method: 'PUT', body: JSON.stringify(data) }),
+  deleteInvoice: (id) => request(`/api/invoices/${id}`, { method: 'DELETE' }),
+  getNextSequence: (invoiceType) => request(`/api/invoices/next-sequence/${invoiceType}`),
+
+  // Quotes - Phase 4
+  getQuotes: (filter) => request(`/api/quotes${filter ? '?filter=' + JSON.stringify(filter) : ''}`),
+  getQuoteById: (id) => request(`/api/quotes/${id}`),
+  addQuote: (data) => request('/api/quotes', { method: 'POST', body: JSON.stringify(data) }),
+  updateQuote: (data) => request('/api/quotes', { method: 'PUT', body: JSON.stringify(data) }),
+  deleteQuote: (id) => request(`/api/quotes/${id}`, { method: 'DELETE' }),
 
   getLayouts: () => Promise.resolve({ success: true, data: [] }),
   getLayoutById: () => Promise.resolve({ success: true, data: undefined }),
@@ -208,7 +239,10 @@ export const webApi: Api = {
 
   exportToJson: () => Promise.resolve({ success: true }),
   importFromJson: () => Promise.resolve({ success: true }),
-  exportToXlsx: () => Promise.resolve({ success: true }),
+  exportToXlsx: (entity) => {
+    window.open(`${API_BASE}/api/export/excel/${entity}`, '_blank');
+    return Promise.resolve({ success: true });
+  },
   backupDatabase: () => Promise.resolve({ success: true }),
   restoreDatabase: () => Promise.resolve({ success: true }),
 

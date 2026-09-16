@@ -1,4 +1,5 @@
 import { type FC, useState, useMemo } from 'react';
+import { getApi } from '../../shared/api/restApi';
 import { useTranslation } from 'react-i18next';
 import { CRUDPage } from '../../shared/components/layout/crudPage/CRUDPage';
 import { useItemAdd } from '../../shared/hooks/items/useItemAdd';
@@ -64,6 +65,7 @@ export const ItemsPage: FC = () => {
       isFormMode={isFormMode}
       onSetFormMode={setIsFormMode}
       onAdd={handleAddClick}
+      onExport={() => getApi().exportToXlsx('items')}
       searchQuery={searchQuery}
       onSearchChange={setSearchQuery}
       listComponent={<List data={filteredItems} onEdit={handleEditClick} onDelete={handleDeleteClick} />}

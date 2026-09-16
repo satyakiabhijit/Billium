@@ -7,7 +7,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
 
   // Database operations
   createSqliteDb: () => ipcRenderer.invoke('db:create-sqlite'),
-  openSqliteDb: () => ipcRenderer.invoke('db:open-sqlite'),
+  openSqliteDb: (name?: string) => ipcRenderer.invoke('db:open-sqlite', name),
   testPostgresConnection: (config: unknown) => ipcRenderer.invoke('db:test-postgres', config),
   openPostgresDb: (config: unknown) => ipcRenderer.invoke('db:open-postgres', config),
   closeDb: () => ipcRenderer.invoke('db:close'),
@@ -39,6 +39,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateCategory: (data: unknown) => ipcRenderer.invoke('categories:update', data),
   deleteCategory: (id: number) => ipcRenderer.invoke('categories:delete', id),
 
+  // Taxes
+  getTaxes: (_filter?: unknown) => ipcRenderer.invoke('taxes:get-all', _filter),
+  addTax: (data: unknown) => ipcRenderer.invoke('taxes:add', data),
+  updateTax: (data: unknown) => ipcRenderer.invoke('taxes:update', data),
+  deleteTax: (id: number) => ipcRenderer.invoke('taxes:delete', id),
+
   // Units — Phase 2
   getUnits: (_filter?: unknown) => ipcRenderer.invoke('units:get-all', _filter),
   addUnit: (data: unknown) => ipcRenderer.invoke('units:add', data),
@@ -65,6 +71,13 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateInvoice: (data: unknown) => ipcRenderer.invoke('invoices:update', data),
   deleteInvoice: (id: number) => ipcRenderer.invoke('invoices:delete', id),
   getNextSequence: (invoiceType: string) => ipcRenderer.invoke('invoices:next-sequence', invoiceType),
+
+  // Quotes - Phase 4
+  getQuotes: (_filter?: unknown) => ipcRenderer.invoke('quotes:get-all', _filter),
+  getQuoteById: (id: number) => ipcRenderer.invoke('quotes:get-by-id', id),
+  addQuote: (data: unknown) => ipcRenderer.invoke('quotes:add', data),
+  updateQuote: (data: unknown) => ipcRenderer.invoke('quotes:update', data),
+  deleteQuote: (id: number) => ipcRenderer.invoke('quotes:delete', id),
 
   // Settings — Phase 2
   getSettings: () => ipcRenderer.invoke('settings:get'),
@@ -94,7 +107,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Import/Export — Phase 3
   exportToJson: () => ipcRenderer.invoke('import-export:json'),
   importFromJson: (data: unknown) => ipcRenderer.invoke('import-export:json', data),
-  exportToXlsx: (entity: string) => ipcRenderer.invoke('import-export:xlsx', entity),
+  exportToXlsx: (entity: string) => ipcRenderer.invoke('export:excel', entity),
   backupDatabase: () => ipcRenderer.invoke('import-export:backup'),
   restoreDatabase: () => ipcRenderer.invoke('import-export:restore'),
 

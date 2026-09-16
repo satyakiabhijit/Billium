@@ -19,6 +19,8 @@ const businessFields: (keyof Business)[] = [
   'fileName',
   'logo',
   'vatCode',
+  'gstNumber',
+  'logoBase64',
   'peppolEndpointId',
   'countryCode',
   'code',

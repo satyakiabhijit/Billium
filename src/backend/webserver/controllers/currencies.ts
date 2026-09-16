@@ -3,7 +3,7 @@ import * as currenciesService from '../../shared/services/currencies';
 import { getDb } from './database';
 
 export const initCurrenciesController = (app: Express) => {
-  app.get('/api/currencies', async (req: Request, res: Response) => {
+  app.get('/api/currencies', async (_req: Request, res: Response) => {
     const db = getDb();
     if (!db) return res.json({ success: false, error: 'error.databaseNotConnected' });
     const result = await currenciesService.getAllCurrencies(db);

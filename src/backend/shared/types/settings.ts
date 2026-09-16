@@ -15,6 +15,7 @@ export interface Settings {
   enablePeppol?: boolean;
   enableXRechnung?: boolean;
   pdfFileNameFormat?: string;
+  defaultCurrencyId?: number;
   createdAt?: string;
   updatedAt?: string;
 }

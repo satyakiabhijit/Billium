@@ -22,6 +22,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BusinessIcon from '@mui/icons-material/Business';
 import CategoryIcon from '@mui/icons-material/Category';
 import StraightenIcon from '@mui/icons-material/Straighten';
+import PercentIcon from '@mui/icons-material/Percent';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import SettingsIcon from '@mui/icons-material/Settings';
 import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
@@ -45,9 +46,10 @@ const navItems = [
   { path: '/banks', label: 'nav.banks', icon: <AccountBalanceIcon /> },
   { path: '/businesses', label: 'nav.businesses', icon: <BusinessIcon /> },
   { divider: true },
-  { path: '/categories', label: 'nav.categories', icon: <CategoryIcon /> },
-  { path: '/units', label: 'nav.units', icon: <StraightenIcon /> },
-  { path: '/currencies', label: 'nav.currencies', icon: <CurrencyExchangeIcon /> },
+  { path: '/categories', label: 'Categories', icon: <CategoryIcon /> },
+  { path: '/units', label: 'Units', icon: <StraightenIcon /> },
+  { path: '/taxes', label: 'Tax Slabs', icon: <PercentIcon /> },
+  { path: '/currencies', label: 'Currencies', icon: <CurrencyExchangeIcon /> },
   { divider: true },
   { path: '/layouts', label: 'nav.layouts', icon: <ViewQuiltIcon /> },
   { path: '/style-profiles', label: 'nav.styleProfiles', icon: <PaletteIcon /> },
@@ -68,12 +70,14 @@ export const AppLayout: FC = () => {
   const handleLogout = async () => {
     const api = getApi();
     await api.closeDb();
+    localStorage.removeItem('billium_db');
     dispatch(setDbReady(false));
   };
 
   const drawer = (
     <Box sx={{ overflow: 'auto' }}>
-      <Toolbar sx={{ justifyContent: 'center' }}>
+      <Toolbar sx={{ justifyContent: 'center', gap: 1 }}>
+        <img src="/billium logo.png" alt="Billium Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
         <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700 }}>
           Billium
         </Typography>

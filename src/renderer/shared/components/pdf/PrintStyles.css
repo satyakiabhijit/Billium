@@ -1,0 +1,345 @@
+/* === SCREEN STYLES FOR INVOICE TEMPLATE === */
+.invoice-template {
+  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #1a1a2e;
+  background: #ffffff;
+  width: 210mm; /* A4 width */
+  min-height: 297mm; /* A4 min-height */
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.invoice-template * {
+  box-sizing: border-box;
+}
+
+/* === HEADER === */
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 40px 48px 32px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  color: #ffffff;
+}
+
+.inv-header-left .inv-doc-type {
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #e2b96f;
+  margin: 0 0 4px 0;
+}
+
+.inv-header-left .inv-number {
+  font-size: 14px;
+  opacity: 0.75;
+  margin: 0;
+}
+
+.inv-header-right {
+  text-align: right;
+}
+
+.inv-header-right .inv-business-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 4px 0;
+}
+
+.inv-header-right .inv-business-detail {
+  font-size: 11px;
+  opacity: 0.7;
+  margin: 1px 0;
+}
+
+/* === META BAR (dates + status) === */
+.inv-meta {
+  display: flex;
+  gap: 0;
+  background: #f8f9ff;
+  border-bottom: 2px solid #e8eaf0;
+}
+
+.inv-meta-item {
+  flex: 1;
+  padding: 14px 24px;
+  border-right: 1px solid #e8eaf0;
+}
+
+.inv-meta-item:last-child {
+  border-right: none;
+}
+
+.inv-meta-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8a93b0;
+  margin-bottom: 3px;
+}
+
+.inv-meta-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.inv-status-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inv-status-badge.paid    { background: #d4edda; color: #155724; }
+.inv-status-badge.unpaid  { background: #fff3cd; color: #856404; }
+.inv-status-badge.overdue { background: #f8d7da; color: #721c24; }
+.inv-status-badge.draft   { background: #e2e3e5; color: #383d41; }
+.inv-status-badge.sent    { background: #cce5ff; color: #004085; }
+.inv-status-badge.accepted { background: #d4edda; color: #155724; }
+.inv-status-badge.rejected { background: #f8d7da; color: #721c24; }
+
+/* === PARTIES (Bill To / From) === */
+.inv-parties {
+  display: flex;
+  gap: 24px;
+  padding: 28px 48px;
+}
+
+.inv-party {
+  flex: 1;
+}
+
+.inv-party-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #8a93b0;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #e2b96f;
+  display: inline-block;
+}
+
+.inv-party-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 4px 0;
+}
+
+.inv-party-detail {
+  font-size: 12px;
+  color: #4a5568;
+  margin: 2px 0;
+}
+
+/* === ITEMS TABLE === */
+.inv-items {
+  padding: 0 48px 28px;
+}
+
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #e8eaf0;
+}
+
+.inv-table thead tr {
+  background: #1a1a2e;
+  color: #ffffff;
+}
+
+.inv-table thead th {
+  padding: 10px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: left;
+}
+
+.inv-table thead th.right { text-align: right; }
+.inv-table thead th.center { text-align: center; }
+
+.inv-table tbody tr {
+  border-bottom: 1px solid #f0f1f5;
+}
+
+.inv-table tbody tr:last-child { border-bottom: none; }
+.inv-table tbody tr:nth-child(even) { background: #fafbff; }
+
+.inv-table tbody td {
+  padding: 10px 14px;
+  font-size: 12px;
+  color: #2d3748;
+}
+
+.inv-table tbody td.right { text-align: right; font-variant-numeric: tabular-nums; }
+.inv-table tbody td.center { text-align: center; }
+
+.inv-item-name { font-weight: 600; color: #1a1a2e; }
+.inv-item-desc { font-size: 11px; color: #8a93b0; margin-top: 2px; }
+
+/* === TOTALS === */
+.inv-totals-section {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 48px 28px;
+}
+
+.inv-totals {
+  width: 280px;
+}
+
+.inv-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 5px 0;
+  font-size: 12px;
+  color: #4a5568;
+}
+
+.inv-total-row.divider {
+  border-top: 1px solid #e8eaf0;
+  margin-top: 4px;
+  padding-top: 9px;
+}
+
+.inv-total-row.grand {
+  border-top: 2px solid #1a1a2e;
+  margin-top: 6px;
+  padding-top: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+/* === NOTES & TERMS === */
+.inv-notes {
+  padding: 0 48px 20px;
+  display: flex;
+  gap: 24px;
+}
+
+.inv-notes-block {
+  flex: 1;
+}
+
+.inv-notes-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8a93b0;
+  margin-bottom: 6px;
+}
+
+.inv-notes-text {
+  font-size: 12px;
+  color: #4a5568;
+  white-space: pre-wrap;
+}
+
+/* === FOOTER === */
+.inv-footer {
+  margin-top: auto;
+  padding: 14px 48px;
+  background: #f8f9ff;
+  border-top: 1px solid #e8eaf0;
+  text-align: center;
+  font-size: 10px;
+  color: #8a93b0;
+}
+
+/* === BANK DETAILS === */
+.inv-bank {
+  padding: 0 48px 20px;
+}
+
+.inv-bank-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #8a93b0;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 2px solid #e2b96f;
+  display: inline-block;
+}
+
+.inv-bank-grid {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.inv-bank-field { }
+.inv-bank-field-label {
+  font-size: 10px;
+  color: #8a93b0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.inv-bank-field-value {
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+/* ============================================================
+   PRINT MEDIA — hides UI chrome, sets A4 page
+   ============================================================ */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  /* Hide everything except the print target */
+  body > *:not(#invoice-print-portal) {
+    display: none !important;
+  }
+
+  #invoice-print-portal {
+    display: block !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 99999;
+    background: white;
+  }
+
+  .invoice-template {
+    max-width: 100%;
+    width: 100%;
+    page-break-inside: avoid;
+  }
+
+  .inv-header {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .inv-table thead tr {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

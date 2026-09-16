@@ -19,7 +19,8 @@ export const List: FC<ListProps> = ({ data, onEdit, onDelete }) => {
       <Table sx={{ minWidth: 650 }}>
         <TableHead sx={{ backgroundColor: 'action.hover' }}>
           <TableRow>
-            <TableCell>Name</TableCell>\n            <TableCell>Unit Price</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Unit Price</TableCell>
             <TableCell align="center">Status</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>

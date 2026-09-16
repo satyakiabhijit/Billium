@@ -15,6 +15,8 @@ export interface CRUDPageProps {
   listComponent: ReactNode;
   formComponent: ReactNode;
   hideAddButton?: boolean;
+  onExport?: () => void;
+  customActions?: ReactNode;
 }
 
 export const CRUDPage: FC<CRUDPageProps> = ({
@@ -26,7 +28,9 @@ export const CRUDPage: FC<CRUDPageProps> = ({
   onAdd,
   listComponent,
   formComponent,
-  hideAddButton
+  hideAddButton,
+  onExport,
+  customActions
 }) => {
   const { t } = useTranslation();
 
@@ -60,6 +64,12 @@ export const CRUDPage: FC<CRUDPageProps> = ({
                 }}
               />
             )}
+            {onExport && (
+              <Button variant="outlined" onClick={onExport}>
+                {t('common.export')}
+              </Button>
+            )}
+            {customActions}
             {!hideAddButton && (
               <Button variant="contained" startIcon={<AddIcon />} onClick={onAdd}>
                 {t('common.add')}

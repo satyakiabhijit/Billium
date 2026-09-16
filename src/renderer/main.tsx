@@ -19,6 +19,7 @@ import { ReportsPage } from './pages/reports';
 import { SettingsPage } from './pages/settings';
 import { StyleProfilesPage } from './pages/styleProfiles';
 import { UnitsPage } from './pages/units';
+import { TaxesPage } from './pages/taxes';
 import { store } from './state/configureStore';
 
 const isElectron = typeof window !== 'undefined' && 'electronAPI' in window;
@@ -37,6 +38,7 @@ const routes = [
       { path: 'businesses', element: <BusinessesPage /> },
       { path: 'categories', element: <CategoriesPage /> },
       { path: 'units', element: <UnitsPage /> },
+      { path: 'taxes', element: <TaxesPage /> },
       { path: 'currencies', element: <CurrenciesPage /> },
       { path: 'settings', element: <SettingsPage /> },
       { path: 'layouts', element: <LayoutsPage /> },

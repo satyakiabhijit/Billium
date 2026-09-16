@@ -19,7 +19,8 @@ const settingsFields: (keyof Settings)[] = [
   'enableQuotes',
   'enablePeppol',
   'enableXRechnung',
-  'pdfFileNameFormat'
+  'pdfFileNameFormat',
+  'defaultCurrencyId'
 ];
 
 export const getSettings = async (db: DatabaseAdapter): Promise<Response<Settings>> => {

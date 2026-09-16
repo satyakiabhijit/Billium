@@ -3,11 +3,13 @@ import { Box, Button, TextField, FormControlLabel, Switch, Grid, Paper, Typograp
 import { useTranslation } from 'react-i18next';
 import { useSettingsRetrieve } from '../../shared/hooks/settings/useSettingsRetrieve';
 import { useSettingsUpdate } from '../../shared/hooks/settings/useSettingsUpdate';
+import { useCurrenciesRetrieve } from '../../shared/hooks/currencies/useCurrenciesRetrieve';
 import type { Settings } from '../../shared/types/settings';
 
 export const SettingsPage: FC = () => {
   const { t } = useTranslation();
   const { data, mutate } = useSettingsRetrieve();
+  const { data: currencies } = useCurrenciesRetrieve();
   const updateSettings = useSettingsUpdate();
   const [formData, setFormData] = useState<Partial<Settings>>({});
 
@@ -16,7 +18,10 @@ export const SettingsPage: FC = () => {
   }, [data]);
 
   const handleChange = (field: keyof Settings) => (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    let value: any = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    if (field === 'defaultCurrencyId' && value) {
+      value = Number(value);
+    }
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -38,6 +43,21 @@ export const SettingsPage: FC = () => {
           </Grid>
           <Grid item xs={12} sm={6}>
             <TextField fullWidth label="Invoice Prefix" value={formData.invoicePrefix || ''} onChange={handleChange('invoicePrefix')} />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              fullWidth
+              label="Default Currency"
+              value={formData.defaultCurrencyId?.toString() || ''}
+              onChange={handleChange('defaultCurrencyId')}
+              SelectProps={{ native: true }}
+            >
+              <option value=""></option>
+              {currencies?.map((c: any) => (
+                <option key={c.id} value={c.id.toString()}>{c.code} — {c.name}</option>
+              ))}
+            </TextField>
           </Grid>
           <Grid item xs={12}>
             <FormControlLabel control={<Switch checked={formData.enableQuotes || false} onChange={handleChange('enableQuotes')} />} label="Enable Quotes" />

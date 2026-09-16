@@ -8,6 +8,10 @@ import { initIpcHandlers } from './index';
 let currentDb: DatabaseAdapter | null = null;
 
 export const initDBDialogsHandlers = (mainWindow: BrowserWindow) => {
+  // Remove any stale handlers before re-registering (safety for HMR rebuilds)
+  const dbChannels = ['db:create-sqlite', 'db:open-sqlite', 'db:test-postgres', 'db:open-postgres', 'db:close', 'get-app-version', 'ping'];
+  for (const ch of dbChannels) ipcMain.removeHandler(ch);
+
   ipcMain.handle('db:create-sqlite', async () => {
     const result = await dialog.showSaveDialog(mainWindow, {
       title: 'Create New Database',
@@ -28,21 +32,26 @@ export const initDBDialogsHandlers = (mainWindow: BrowserWindow) => {
     }
   });
 
-  ipcMain.handle('db:open-sqlite', async () => {
-    const result = await dialog.showOpenDialog(mainWindow, {
-      title: 'Open Database',
-      filters: [{ name: 'SQLite Database', extensions: ['db', 'sqlite', 'sqlite3'] }],
-      properties: ['openFile']
-    });
+  ipcMain.handle('db:open-sqlite', async (_event, filePath?: string) => {
+    let targetPath = filePath;
 
-    if (result.canceled || result.filePaths.length === 0) return { success: false };
+    if (!targetPath) {
+      const result = await dialog.showOpenDialog(mainWindow, {
+        title: 'Open Database',
+        filters: [{ name: 'SQLite Database', extensions: ['db', 'sqlite', 'sqlite3'] }],
+        properties: ['openFile']
+      });
+
+      if (result.canceled || result.filePaths.length === 0) return { success: false };
+      targetPath = result.filePaths[0];
+    }
 
     try {
-      const { db } = await openSqlLite({ fullPath: result.filePaths[0], createIfMissing: false });
+      const { db } = await openSqlLite({ fullPath: targetPath, createIfMissing: false });
       await initDatabase(db);
       currentDb = db;
       initIpcHandlers(db, mainWindow);
-      return { success: true, path: result.filePaths[0] };
+      return { success: true, path: targetPath };
     } catch (err) {
       return { success: false, error: String(err) };
     }

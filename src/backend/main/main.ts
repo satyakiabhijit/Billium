@@ -9,8 +9,8 @@ config();
 const isDev = !app.isPackaged;
 const devServer = APP_CONFIG.FE_SERVER_URL;
 const mainAssetsPath = isDev
-  ? join(resolve(), 'dist-be/backend/main/assets')
-  : join(app.getAppPath(), 'dist-be/backend/main/assets');
+  ? join(resolve(), 'public')
+  : join(app.getAppPath(), 'dist-fe');
 const preloadPath = isDev
   ? join(resolve(), 'dist-be/preload/preload.cjs')
   : join(app.getAppPath(), 'dist-be/preload/preload.cjs');
@@ -24,7 +24,7 @@ const createWindow = () => {
     height: 900,
     minWidth: 800,
     minHeight: 600,
-    icon: join(mainAssetsPath, 'icon.png'),
+    icon: join(mainAssetsPath, 'billium logo ico.ico'),
     webPreferences: {
       preload: preloadPath,
       contextIsolation: true,

@@ -1,7 +1,7 @@
 import { type FC } from 'react';
 import { Alert, Snackbar, Stack } from '@mui/material';
-import { useAppDispatch, useAppSelector } from '../../../state/configureStore';
-import { removeToast, selectToasts } from '../../../state/pageSlice';
+import { useAppDispatch, useAppSelector } from '../../../../state/configureStore';
+import { removeToast, selectToasts, type ToastProps } from '../../../../state/pageSlice';
 
 export const ToastContainer: FC = () => {
   const toasts = useAppSelector(selectToasts);
@@ -12,7 +12,7 @@ export const ToastContainer: FC = () => {
       spacing={1}
       sx={{ position: 'fixed', top: 16, right: 16, zIndex: 9998 }}
     >
-      {toasts.map(toast => (
+      {toasts.map((toast: ToastProps) => (
         <Snackbar
           key={toast.id}
           open
@@ -21,6 +21,7 @@ export const ToastContainer: FC = () => {
           anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         >
           <Alert
+            key={toast.id}
             severity={toast.type}
             onClose={() => dispatch(removeToast(toast.id))}
             variant="filled"

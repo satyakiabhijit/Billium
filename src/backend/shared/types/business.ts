@@ -12,6 +12,8 @@ export interface Business {
   fileName?: string;
   logo?: string | Uint8Array;
   vatCode?: string;
+  gstNumber?: string;
+  logoBase64?: string; // base64-encoded logo for PDF rendering
   peppolEndpointId?: string;
   countryCode?: string;
   code?: string;

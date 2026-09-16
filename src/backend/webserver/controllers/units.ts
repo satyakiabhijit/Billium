@@ -3,7 +3,7 @@ import * as unitsService from '../../shared/services/units';
 import { getDb } from './database';
 
 export const initUnitsController = (app: Express) => {
-  app.get('/api/units', async (req: Request, res: Response) => {
+  app.get('/api/units', async (_req: Request, res: Response) => {
     const db = getDb();
     if (!db) return res.json({ success: false, error: 'error.databaseNotConnected' });
     const result = await unitsService.getAllUnits(db);

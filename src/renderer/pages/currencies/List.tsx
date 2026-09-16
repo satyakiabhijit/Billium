@@ -19,7 +19,9 @@ export const List: FC<ListProps> = ({ data, onEdit, onDelete }) => {
       <Table sx={{ minWidth: 650 }}>
         <TableHead sx={{ backgroundColor: 'action.hover' }}>
           <TableRow>
-            <TableCell>Code</TableCell>\n            <TableCell>Name</TableCell>\n            <TableCell>Symbol</TableCell>
+            <TableCell>Code</TableCell>
+            <TableCell>Name</TableCell>
+            <TableCell>Symbol</TableCell>
             <TableCell align="center">Status</TableCell>
             <TableCell align="right">Actions</TableCell>
           </TableRow>
@@ -30,7 +32,9 @@ export const List: FC<ListProps> = ({ data, onEdit, onDelete }) => {
           ) : (
             data.map(row => (
               <TableRow key={row.id}>
-                <TableCell>{row.code}</TableCell>\n                <TableCell>{row.name}</TableCell>\n                <TableCell>{row.symbol}</TableCell>
+                <TableCell>{row.code}</TableCell>
+                <TableCell>{row.name}</TableCell>
+                <TableCell>{row.symbol}</TableCell>
                 <TableCell align="center">
                   <Chip label={row.isArchived ? 'Archived' : 'Active'} color={row.isArchived ? 'default' : 'success'} size="small" />
                 </TableCell>
