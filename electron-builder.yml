@@ -1,0 +1,42 @@
+appId: com.billium
+productName: Billium
+
+directories:
+  output: release
+
+publish:
+  provider: github
+  owner: billium
+  repo: billium
+
+files:
+  - dist-fe/**
+  - dist-be/**
+  - node_modules/**
+  - package.json
+
+extraMetadata:
+  main: dist-be/backend/main/main.cjs
+
+forceCodeSigning: false
+
+win:
+  target:
+    - nsis
+
+nsis:
+  oneClick: true
+  perMachine: false
+  allowElevation: false
+  allowToChangeInstallationDirectory: false
+
+mac:
+  target:
+    - dmg
+  category: public.app-category.business
+
+linux:
+  target:
+    - AppImage
+    - deb
+  category: Office
