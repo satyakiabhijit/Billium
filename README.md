@@ -69,7 +69,7 @@ billium/
 ### Installation
 
 ```bash
-git clone https://github.com/your-username/billium.git
+git clone https://github.com/satyakiabhijit/billium.git
 cd billium
 npm install
 ```
