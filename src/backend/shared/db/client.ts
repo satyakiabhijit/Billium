@@ -8,6 +8,7 @@ import {
   convertDateFields,
   convertDateFieldsArray
 } from '../utils/dbHelper';
+import { PG_CAMEL_MAP } from '../utils/pgMap';
 
 const convertQuestionToDollar = (sql: string) => {
   let i = 0;
@@ -51,8 +52,17 @@ export const createSqliteAdapter = (db: sqlite3.Database): DatabaseAdapter => {
   };
 };
 
-export const createPostgresAdapter = async (connectionString: string): Promise<DatabaseAdapter> => {
-  const pool = new Pool({ connectionString });
+const mapPgRowToCamelCase = (row: Record<string, unknown>): Record<string, unknown> => {
+  const newRow: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(row)) {
+    const camelKey = PG_CAMEL_MAP[key] || key;
+    newRow[camelKey] = value;
+  }
+  return newRow;
+};
+
+export const createPostgresAdapter = (config: Record<string, any>): DatabaseAdapter => {
+  const pool = new Pool(config);
 
   return {
     type: DatabaseType.postgres,
@@ -67,14 +77,14 @@ export const createPostgresAdapter = async (connectionString: string): Promise<D
       const pgSql = convertQuestionToDollar(sql);
       const result = await pool.query(pgSql, params);
       if (result.rows.length === 0) return null;
-      const row = convertBooleanFields(result.rows[0] as Record<string, unknown>);
+      const row = convertBooleanFields(mapPgRowToCamelCase(result.rows[0] as Record<string, unknown>));
       const convertedRow = convertDateFields(row);
       return convertedRow as T;
     },
     all: async <T = Record<string, unknown>>(sql: string, params: unknown[] = []) => {
       const pgSql = convertQuestionToDollar(sql);
       const result = await pool.query(pgSql, params);
-      const rows = convertBooleanFieldsArray(result.rows as Record<string, unknown>[]);
+      const rows = convertBooleanFieldsArray(result.rows.map(r => mapPgRowToCamelCase(r as Record<string, unknown>)));
       const convertedRows = convertDateFieldsArray(rows);
       return convertedRows as T[];
     },

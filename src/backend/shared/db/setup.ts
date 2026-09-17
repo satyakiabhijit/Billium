@@ -24,22 +24,25 @@ const sanitizeDatabaseName = (database: string): string => {
 export const testPostgresConnection = async (data?: PostgresConfig): Promise<void> => {
   if (!data) throw new Error('error.connectionFailed');
 
-  const { host, port, user, password, ssl } = data;
+  const { host, port, user, password, database, ssl } = data;
+
+  // Always enable SSL for cloud providers (Supabase, Neon) — they require it
+  const sslConfig = ssl ? { rejectUnauthorized: false } : false;
 
   const client = new Client({
     host,
     port,
     user,
     password,
-    database: 'postgres',
-    ssl
+    database: database || 'postgres',
+    ssl: sslConfig
   });
 
   try {
     await client.connect();
     await client.query('SELECT 1');
-  } catch {
-    throw new Error('error.connectionFailed');
+  } catch (err) {
+    throw new Error(`Connection failed: ${String(err)}`);
   } finally {
     await client.end().catch(() => {});
   }
@@ -49,32 +52,29 @@ export const openPostgreSql = async (data: PostgresConfig): Promise<{ db: Databa
   const { host, port, user, password, database, ssl } = data;
   const safeDatabase = sanitizeDatabaseName(database);
 
-  const authPart = password
-    ? `${encodeURIComponent(user)}:${encodeURIComponent(password)}`
-    : encodeURIComponent(user);
-  const sslPart = ssl ? '?sslmode=require' : '';
-  const connectionString = `postgresql://${authPart}@${host}:${port}/${safeDatabase}${sslPart}`;
+  // Always enable SSL for cloud providers (Supabase, Neon)
+  const sslConfig = ssl ? { rejectUnauthorized: false } : false;
 
+  const poolConfig = {
+    host,
+    port,
+    user,
+    password,
+    database: safeDatabase,
+    ssl: sslConfig
+  };
+
+  // For cloud providers (Supabase, Neon), skip CREATE DATABASE — it's not permitted
+  // Just verify the connection works before handing to the adapter
   try {
-    const tempClient = new Client({
-      host,
-      port,
-      user,
-      password,
-      database: 'postgres',
-      ssl
-    });
-    await tempClient.connect();
-    const res = await tempClient.query('SELECT 1 FROM pg_database WHERE datname = $1', [safeDatabase]);
-    if (res.rowCount === 0) {
-      await tempClient.query(`CREATE DATABASE "${safeDatabase}"`);
-    }
-    await tempClient.end();
-  } catch {
-    throw new Error('error.databaseCreationFailed');
+    const verifyClient = new Client(poolConfig);
+    await verifyClient.connect();
+    await verifyClient.end();
+  } catch (err) {
+    throw new Error(`Connection failed: ${String(err)}`);
   }
 
-  const adapter = await createPostgresAdapter(connectionString);
+  const adapter = await createPostgresAdapter(poolConfig);
 
   return { db: adapter };
 };
@@ -107,8 +107,31 @@ export const openSqlLite = async (data: {
 };
 
 export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
+  const runSql = async (sql: string, params: any[] = []) => {
+    if (db.type === 'postgres') {
+      let pgSql = sql;
+      pgSql = pgSql.replace(/INTEGER PRIMARY KEY AUTOINCREMENT/g, 'SERIAL PRIMARY KEY');
+      pgSql = pgSql.replace(/INTEGER PRIMARY KEY/g, 'SERIAL PRIMARY KEY');
+      pgSql = pgSql.replace(/TEXT DEFAULT \(datetime\('now'\)\)/g, 'TIMESTAMPTZ DEFAULT NOW()');
+      pgSql = pgSql.replace(/BLOB/g, 'BYTEA');
+      pgSql = pgSql.replace(/INSERT OR IGNORE INTO/g, 'INSERT INTO');
+      
+      if (pgSql.includes('INSERT INTO')) {
+         if (pgSql.includes('invoice_sequences')) {
+             pgSql += ' ON CONFLICT (invoiceType) DO NOTHING';
+         } else if (pgSql.includes('settings')) {
+             pgSql += ' ON CONFLICT (id) DO NOTHING';
+         } else if (pgSql.includes('currencies')) {
+             pgSql += ' ON CONFLICT (code) DO NOTHING';
+         }
+      }
+      return db.run(pgSql, params);
+    }
+    return db.run(sql, params);
+  };
+
   // Settings table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS settings (
       id INTEGER PRIMARY KEY,
       language TEXT DEFAULT 'en',
@@ -136,7 +159,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   await db.run(`ALTER TABLE settings ADD COLUMN defaultCurrencyId INTEGER`).catch(() => {});
 
   // Businesses table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS businesses (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -162,12 +185,12 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Add new columns to businesses if they don't exist (idempotent ALTER TABLE)
-  await db.run(`ALTER TABLE businesses ADD COLUMN gstNumber TEXT DEFAULT ''`).catch(() => {});
-  await db.run(`ALTER TABLE businesses ADD COLUMN logoBase64 TEXT DEFAULT ''`).catch(() => {});
+  await runSql(`ALTER TABLE businesses ADD COLUMN gstNumber TEXT DEFAULT ''`).catch(() => {});
+  await runSql(`ALTER TABLE businesses ADD COLUMN logoBase64 TEXT DEFAULT ''`).catch(() => {});
 
 
   // Clients table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS clients (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -189,7 +212,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Categories table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS categories (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
@@ -200,7 +223,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Taxes table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS taxes (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -212,7 +235,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Units table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS units (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL UNIQUE,
@@ -223,7 +246,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Currencies table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS currencies (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       code TEXT NOT NULL UNIQUE,
@@ -237,7 +260,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Items table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -255,7 +278,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Banks table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS banks (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -282,7 +305,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
 
 
   // Style Profiles table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS style_profiles (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
@@ -297,7 +320,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Invoice sequences table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS invoice_sequences (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       invoiceType TEXT NOT NULL,
@@ -307,7 +330,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Invoices table (handles both invoices and quotes via invoiceType)
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS invoices (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       invoiceType TEXT NOT NULL DEFAULT 'invoice',
@@ -362,7 +385,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Invoice Items table
-  await db.run(`
+  await runSql(`
     CREATE TABLE IF NOT EXISTS invoice_items (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       invoiceId INTEGER NOT NULL,
@@ -381,11 +404,11 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   `);
 
   // Insert default settings row
-  await db.run(`INSERT OR IGNORE INTO settings (id) VALUES (1)`);
+  await runSql(`INSERT OR IGNORE INTO settings (id) VALUES (1)`);
 
   // Insert default invoice sequences
-  await db.run(`INSERT OR IGNORE INTO invoice_sequences (invoiceType, nextSequence) VALUES ('invoice', 1)`);
-  await db.run(`INSERT OR IGNORE INTO invoice_sequences (invoiceType, nextSequence) VALUES ('quote', 1)`);
+  await runSql(`INSERT OR IGNORE INTO invoice_sequences (invoiceType, nextSequence) VALUES ('invoice', 1)`);
+  await runSql(`INSERT OR IGNORE INTO invoice_sequences (invoiceType, nextSequence) VALUES ('quote', 1)`);
 
   // Seed world currencies
   const worldCurrencies = [
@@ -541,7 +564,7 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
   { code: 'ZWL', name: 'Zimbabwean Dollar', symbol: 'Z$', country: 'ZW' },
 ];
   for (const c of worldCurrencies) {
-    await db.run(
+    await runSql(
       'INSERT OR IGNORE INTO currencies (code, name, symbol, subunit, isArchived) VALUES (?, ?, ?, 100, 0)',
       [c.code, c.name, c.symbol]
     );

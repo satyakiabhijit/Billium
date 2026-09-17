@@ -6,8 +6,8 @@ directories:
 
 publish:
   provider: github
-  owner: billium
-  repo: billium
+  owner: satyakiabhijit
+  repo: Billium
 
 files:
   - dist-fe/**

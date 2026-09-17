@@ -36,20 +36,20 @@ import { getApi } from '../shared/api/restApi';
 const DRAWER_WIDTH = 240;
 
 const navItems = [
-  { path: '/invoices', label: 'nav.invoices', icon: <ReceiptLongIcon /> },
-  { path: '/quotes', label: 'nav.quotes', icon: <RequestQuoteIcon /> },
+  { path: 'invoices', label: 'nav.invoices', icon: <ReceiptLongIcon /> },
+  { path: 'quotes', label: 'nav.quotes', icon: <RequestQuoteIcon /> },
   { divider: true },
-  { path: '/clients', label: 'nav.clients', icon: <PeopleIcon /> },
-  { path: '/items', label: 'nav.items', icon: <InventoryIcon /> },
-  { path: '/banks', label: 'nav.banks', icon: <AccountBalanceIcon /> },
-  { path: '/businesses', label: 'nav.businesses', icon: <BusinessIcon /> },
+  { path: 'clients', label: 'nav.clients', icon: <PeopleIcon /> },
+  { path: 'items', label: 'nav.items', icon: <InventoryIcon /> },
+  { path: 'banks', label: 'nav.banks', icon: <AccountBalanceIcon /> },
+  { path: 'businesses', label: 'nav.businesses', icon: <BusinessIcon /> },
   { divider: true },
-  { path: '/taxes', label: 'Tax Slabs', icon: <PercentIcon /> },
+  { path: 'taxes', label: 'Tax Slabs', icon: <PercentIcon /> },
   { divider: true },
-  { path: '/style-profiles', label: 'nav.styleProfiles', icon: <PaletteIcon /> },
-  { path: '/reports', label: 'nav.reports', icon: <BarChartIcon /> },
+  { path: 'style-profiles', label: 'nav.styleProfiles', icon: <PaletteIcon /> },
+  { path: 'reports', label: 'nav.reports', icon: <BarChartIcon /> },
   { divider: true },
-  { path: '/settings', label: 'nav.settings', icon: <SettingsIcon /> }
+  { path: 'settings', label: 'nav.settings', icon: <SettingsIcon /> }
 ];
 
 export const AppLayout: FC = () => {
@@ -84,7 +84,7 @@ export const AppLayout: FC = () => {
           return (
             <ListItemButton
               key={item.path}
-              selected={location.pathname === item.path}
+              selected={location.pathname === `/${item.path}` || location.pathname.endsWith(`/${item.path}`)}
               onClick={() => {
                 navigate(item.path!);
                 setMobileOpen(false);
