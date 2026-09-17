@@ -12,6 +12,8 @@ import { initSettingsController } from './settings';
 import { initExportController } from './export';
 import { initInvoicesController } from './invoices';
 import { initQuotesController } from './quotes';
+import { initStyleProfilesController } from './styleProfiles';
+import { initReportsController } from './reports';
 
 export const initControllers = (app: Express) => {
   // Phase 2 Entities:
@@ -31,9 +33,9 @@ export const initControllers = (app: Express) => {
   initQuotesController(app);
 
   // Remaining phases:
-  // initInvoicesController(app);
-  // initLayoutsController(app);
-  // initStyleProfilesController(app);
+  // Remaining phases:
+  initStyleProfilesController(app);
+  initReportsController(app);
   // initPresetsController(app);
   // initImportExportController(app);
 };

@@ -44,7 +44,23 @@ const resources = {
       'common.noData': 'No data available',
       'common.confirm': 'Are you sure?',
       'common.yes': 'Yes',
-      'common.no': 'No'
+      'common.no': 'No',
+      'common.archived': 'Archived',
+      'common.active': 'Active',
+      'common.close': 'Close',
+      'common.view': 'View',
+      'common.name': 'Name',
+      'common.description': 'Description',
+      'common.status': 'Status',
+      'common.actions': 'Actions',
+      'common.back': 'Back',
+      'common.next': 'Next',
+      'common.submit': 'Submit',
+      'common.reset': 'Reset',
+      'common.clear': 'Clear',
+      'common.select': 'Select',
+      'common.optional': 'Optional',
+      'common.required': 'Required'
     }
   }
 };

@@ -279,6 +279,23 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
     )
   `);
 
+
+
+  // Style Profiles table
+  await db.run(`
+    CREATE TABLE IF NOT EXISTS style_profiles (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      templateName TEXT DEFAULT 'standard',
+      primaryColor TEXT DEFAULT '#000000',
+      secondaryColor TEXT DEFAULT '#ffffff',
+      fontFamily TEXT DEFAULT 'sans-serif',
+      isArchived INTEGER DEFAULT 0,
+      createdAt TEXT DEFAULT (datetime('now')),
+      updatedAt TEXT DEFAULT (datetime('now'))
+    )
+  `);
+
   // Invoice sequences table
   await db.run(`
     CREATE TABLE IF NOT EXISTS invoice_sequences (
@@ -301,7 +318,6 @@ export const createSchema = async (db: DatabaseAdapter): Promise<void> => {
       businessId INTEGER NOT NULL,
       bankId INTEGER,
       clientId INTEGER NOT NULL,
-      layoutId INTEGER,
       currencyId INTEGER NOT NULL,
       status TEXT DEFAULT 'unpaid',
       isArchived INTEGER DEFAULT 0,

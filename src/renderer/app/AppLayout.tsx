@@ -25,9 +25,7 @@ import StraightenIcon from '@mui/icons-material/Straighten';
 import PercentIcon from '@mui/icons-material/Percent';
 import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
 import SettingsIcon from '@mui/icons-material/Settings';
-import ViewQuiltIcon from '@mui/icons-material/ViewQuilt';
 import PaletteIcon from '@mui/icons-material/Palette';
-import TuneIcon from '@mui/icons-material/Tune';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import LogoutIcon from '@mui/icons-material/Logout';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -46,14 +44,9 @@ const navItems = [
   { path: '/banks', label: 'nav.banks', icon: <AccountBalanceIcon /> },
   { path: '/businesses', label: 'nav.businesses', icon: <BusinessIcon /> },
   { divider: true },
-  { path: '/categories', label: 'Categories', icon: <CategoryIcon /> },
-  { path: '/units', label: 'Units', icon: <StraightenIcon /> },
   { path: '/taxes', label: 'Tax Slabs', icon: <PercentIcon /> },
-  { path: '/currencies', label: 'Currencies', icon: <CurrencyExchangeIcon /> },
   { divider: true },
-  { path: '/layouts', label: 'nav.layouts', icon: <ViewQuiltIcon /> },
   { path: '/style-profiles', label: 'nav.styleProfiles', icon: <PaletteIcon /> },
-  { path: '/presets', label: 'nav.presets', icon: <TuneIcon /> },
   { path: '/reports', label: 'nav.reports', icon: <BarChartIcon /> },
   { divider: true },
   { path: '/settings', label: 'nav.settings', icon: <SettingsIcon /> }

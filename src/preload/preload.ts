@@ -83,13 +83,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getSettings: () => ipcRenderer.invoke('settings:get'),
   updateSettings: (data: unknown) => ipcRenderer.invoke('settings:update', data),
 
-  // Layouts — Phase 5
-  getLayouts: () => ipcRenderer.invoke('layouts:get-all'),
-  getLayoutById: (id: number) => ipcRenderer.invoke('layouts:get-by-id', id),
-  addLayout: (data: unknown) => ipcRenderer.invoke('layouts:add', data),
-  updateLayout: (data: unknown) => ipcRenderer.invoke('layouts:update', data),
-  deleteLayout: (id: number) => ipcRenderer.invoke('layouts:delete', id),
-
   // Style Profiles — Phase 5
   getStyleProfiles: (_filter?: unknown) => ipcRenderer.invoke('style-profiles:get-all', _filter),
   getStyleProfileById: (id: number) => ipcRenderer.invoke('style-profiles:get-by-id', id),
@@ -97,16 +90,12 @@ contextBridge.exposeInMainWorld('electronAPI', {
   updateStyleProfile: (data: unknown) => ipcRenderer.invoke('style-profiles:update', data),
   deleteStyleProfile: (id: number) => ipcRenderer.invoke('style-profiles:delete', id),
 
-  // Presets — Phase 6
-  getPresets: () => ipcRenderer.invoke('presets:get-all'),
-  getPresetById: (id: number) => ipcRenderer.invoke('presets:get-by-id', id),
-  addPreset: (data: unknown) => ipcRenderer.invoke('presets:add', data),
-  updatePreset: (data: unknown) => ipcRenderer.invoke('presets:update', data),
-  deletePreset: (id: number) => ipcRenderer.invoke('presets:delete', id),
-
   // Import/Export — Phase 3
   exportToJson: () => ipcRenderer.invoke('import-export:json'),
   importFromJson: (data: unknown) => ipcRenderer.invoke('import-export:json', data),
+  
+  // Reports
+  getDashboardStats: () => ipcRenderer.invoke('reports:stats'),
   exportToXlsx: (entity: string) => ipcRenderer.invoke('export:excel', entity),
   backupDatabase: () => ipcRenderer.invoke('import-export:backup'),
   restoreDatabase: () => ipcRenderer.invoke('import-export:restore'),

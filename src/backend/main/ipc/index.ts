@@ -14,6 +14,8 @@ import { initSettingsHandlers } from './settings';
 import { initExportHandlers } from './export';
 import { initInvoicesHandlers } from './invoices';
 import { initQuotesHandlers } from './quotes';
+import { registerStyleProfileHandlers } from './styleProfiles';
+import { registerReportsHandlers } from './reports';
 
 // All channels registered by initIpcHandlers — must be removed before re-registering
 // to prevent "Attempted to register a second handler" errors on DB re-open / HMR reload.
@@ -42,6 +44,10 @@ const ALL_CHANNELS = [
   'invoices:get-all', 'invoices:get-by-id', 'invoices:add', 'invoices:update', 'invoices:delete', 'invoices:next-sequence',
   // Quotes
   'quotes:get-all', 'quotes:get-by-id', 'quotes:add', 'quotes:update', 'quotes:delete',
+  // Style Profiles
+  'style-profiles:get-all', 'style-profiles:get-by-id', 'style-profiles:add', 'style-profiles:update', 'style-profiles:delete',
+  // Reports
+  'reports:stats',
 ];
 
 export const initIpcHandlers = (db: DatabaseAdapter, _mainWindow: BrowserWindow) => {
@@ -61,11 +67,13 @@ export const initIpcHandlers = (db: DatabaseAdapter, _mainWindow: BrowserWindow)
   initCurrenciesHandlers(db);
   initItemsHandlers(db);
   initSettingsHandlers(db);
+  registerStyleProfileHandlers(db);
 
   // Phase 3 & 4
   initExportHandlers(db);
   initInvoicesHandlers(db);
   initQuotesHandlers(db);
+  registerReportsHandlers(db);
 
   console.log('IPC handlers initialized');
 };

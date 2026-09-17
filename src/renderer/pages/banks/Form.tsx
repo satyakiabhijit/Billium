@@ -25,6 +25,8 @@ export const Form: FC<FormProps> = ({ initialData, onSave, onCancel }) => {
     accountNumber: '',
     swiftCode: '',
     address: '',
+    upiCode: '',
+    qrCode: '',
     isArchived: false
   });
 
@@ -37,6 +39,23 @@ export const Form: FC<FormProps> = ({ initialData, onSave, onCancel }) => {
   const handleChange = (field: keyof Bank) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setFormData(prev => ({ 
+          ...prev, 
+          qrCode: reader.result as string,
+          qrCodeFileName: file.name,
+          qrCodeFileType: file.type,
+          qrCodeFileSize: file.size
+        }));
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -90,6 +109,36 @@ export const Form: FC<FormProps> = ({ initialData, onSave, onCancel }) => {
               value={formData.address || ''}
               onChange={handleChange('address')}
             />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              fullWidth
+              label="UPI ID"
+              value={formData.upiCode || ''}
+              onChange={handleChange('upiCode')}
+              placeholder="e.g. user@okaxis"
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <Button
+              variant="outlined"
+              component="label"
+              fullWidth
+              sx={{ height: '56px' }}
+            >
+              Upload QR Code
+              <input
+                type="file"
+                hidden
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+            </Button>
+            {formData.qrCodeFileName && (
+              <Box sx={{ mt: 1, fontSize: '0.85rem', color: 'text.secondary' }}>
+                Uploaded: {formData.qrCodeFileName}
+              </Box>
+            )}
           </Grid>
           <Grid item xs={12}>
             <FormControlLabel

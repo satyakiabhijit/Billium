@@ -1,6 +1,6 @@
 /* === SCREEN STYLES FOR INVOICE TEMPLATE === */
 .invoice-template {
-  font-family: 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: var(--font-family, 'Inter'), 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
   font-size: 13px;
   line-height: 1.5;
   color: #1a1a2e;
@@ -24,7 +24,7 @@
   justify-content: space-between;
   align-items: flex-start;
   padding: 40px 48px 32px;
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 60%, #0f3460 100%);
+  background: var(--primary-color, #1a1a2e);
   color: #ffffff;
 }
 
@@ -33,7 +33,7 @@
   font-weight: 700;
   letter-spacing: 2px;
   text-transform: uppercase;
-  color: #e2b96f;
+  color: var(--secondary-color, #e2b96f);
   margin: 0 0 4px 0;
 }
 

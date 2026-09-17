@@ -12,8 +12,6 @@ import { ClientsPage } from './pages/clients';
 import { CurrenciesPage } from './pages/currencies';
 import { InvoicesPage } from './pages/invoices';
 import { ItemsPage } from './pages/items';
-import { LayoutsPage } from './pages/layouts';
-import { PresetsPage } from './pages/presets';
 import { QuotesPage } from './pages/quotes';
 import { ReportsPage } from './pages/reports';
 import { SettingsPage } from './pages/settings';
@@ -41,9 +39,7 @@ const routes = [
       { path: 'taxes', element: <TaxesPage /> },
       { path: 'currencies', element: <CurrenciesPage /> },
       { path: 'settings', element: <SettingsPage /> },
-      { path: 'layouts', element: <LayoutsPage /> },
       { path: 'style-profiles', element: <StyleProfilesPage /> },
-      { path: 'presets', element: <PresetsPage /> },
       { path: 'reports', element: <ReportsPage /> }
     ]
   }

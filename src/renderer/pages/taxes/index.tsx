@@ -6,6 +6,7 @@ import {
   ListItemText, Checkbox, Divider, Alert
 } from '@mui/material';
 import DownloadIcon from '@mui/icons-material/Download';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { CRUDPage } from '../../shared/components/layout/crudPage/CRUDPage';
 import { useTaxAdd } from '../../shared/hooks/taxes/useTaxAdd';
 import { useTaxDelete } from '../../shared/hooks/taxes/useTaxDelete';
@@ -110,6 +111,23 @@ export const TaxesPage: FC = () => {
     setImportOpen(false);
   };
 
+  const handleDeleteImported = async () => {
+    if (window.confirm('Are you sure you want to delete all imported slabs? Any custom slabs you created manually will be kept.')) {
+      const allPresets = Object.values(TAX_PRESETS).flat();
+      const importedIds = items
+        .filter((t: Tax) => allPresets.some(p => p.name === t.name && p.rate === Number(t.rate)))
+        .map((t: Tax) => t.id)
+        .filter((id): id is number => id !== undefined);
+
+      if (importedIds.length > 0) {
+        for (const id of importedIds) {
+          await remove(id, () => {});
+        }
+        mutate();
+      }
+    }
+  };
+
   // All currencies that have presets
   const currenciesWithPresets = WORLD_CURRENCIES.filter(c => TAX_PRESETS[c.code]);
 
@@ -122,9 +140,14 @@ export const TaxesPage: FC = () => {
         onAdd={handleAddClick}
         customActions={
           !isFormMode && (
-            <Button variant="outlined" startIcon={<DownloadIcon />} onClick={openImportDialog}>
-              Import Slabs
-            </Button>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={handleDeleteImported}>
+                Delete Imported
+              </Button>
+              <Button variant="outlined" startIcon={<DownloadIcon />} onClick={openImportDialog}>
+                Import Slabs
+              </Button>
+            </Box>
           )
         }
         searchQuery={searchQuery}

@@ -45,7 +45,18 @@ const safeFetchData = async (docType: DocType, id: number): Promise<InvoiceTempl
   const bank = parseSnapshot<SnapshotBank>(raw.bankSnapshot);
   const currency = parseSnapshot<SnapshotCurrency>(raw.currencySnapshot);
 
-  return { invoice: raw, items, client, business, bank, currency, docType };
+
+  let styleProfile: any = undefined;
+  if (raw.styleProfilesId) {
+    try {
+      const spRes = await api.getStyleProfileById(raw.styleProfilesId) as { success: boolean; data?: any };
+      if (spRes.success) styleProfile = spRes.data;
+    } catch (e) {
+      console.warn('Failed to load style profile', e);
+    }
+  }
+
+  return { invoice: raw, items, client, business, bank, currency, styleProfile, docType };
 };
 
 /**

@@ -65,12 +65,6 @@ export const IPC_CHANNELS = {
   SETTINGS_GET: 'settings:get',
   SETTINGS_UPDATE: 'settings:update',
 
-  // Layouts
-  LAYOUTS_GET_ALL: 'layouts:get-all',
-  LAYOUTS_GET_BY_ID: 'layouts:get-by-id',
-  LAYOUTS_ADD: 'layouts:add',
-  LAYOUTS_UPDATE: 'layouts:update',
-  LAYOUTS_DELETE: 'layouts:delete',
 
   // Style Profiles
   STYLE_PROFILES_GET_ALL: 'style-profiles:get-all',
@@ -79,12 +73,6 @@ export const IPC_CHANNELS = {
   STYLE_PROFILES_UPDATE: 'style-profiles:update',
   STYLE_PROFILES_DELETE: 'style-profiles:delete',
 
-  // Presets
-  PRESETS_GET_ALL: 'presets:get-all',
-  PRESETS_GET_BY_ID: 'presets:get-by-id',
-  PRESETS_ADD: 'presets:add',
-  PRESETS_UPDATE: 'presets:update',
-  PRESETS_DELETE: 'presets:delete',
 
   // Import/Export
   IMPORT_EXPORT_JSON: 'import-export:json',

@@ -45,19 +45,29 @@ export const SettingsPage: FC = () => {
             <TextField fullWidth label="Invoice Prefix" value={formData.invoicePrefix || ''} onChange={handleChange('invoicePrefix')} />
           </Grid>
           <Grid item xs={12} sm={6}>
-            <TextField
-              select
-              fullWidth
-              label="Default Currency"
-              value={formData.defaultCurrencyId?.toString() || ''}
-              onChange={handleChange('defaultCurrencyId')}
-              SelectProps={{ native: true }}
-            >
-              <option value=""></option>
-              {currencies?.map((c: any) => (
-                <option key={c.id} value={c.id.toString()}>{c.code} — {c.name}</option>
-              ))}
-            </TextField>
+            <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+              <TextField
+                select
+                fullWidth
+                label="Default Currency"
+                value={formData.defaultCurrencyId?.toString() || ''}
+                onChange={handleChange('defaultCurrencyId')}
+                SelectProps={{ native: true }}
+              >
+                <option value=""></option>
+                {currencies?.map((c: any) => (
+                  <option key={c.id} value={c.id.toString()}>{c.code} — {c.name}</option>
+                ))}
+              </TextField>
+              <Button
+                variant="outlined"
+                color="primary"
+                href="#/currencies"
+                sx={{ height: '56px', whiteSpace: 'nowrap' }}
+              >
+                Manage
+              </Button>
+            </Box>
           </Grid>
           <Grid item xs={12}>
             <FormControlLabel control={<Switch checked={formData.enableQuotes || false} onChange={handleChange('enableQuotes')} />} label="Enable Quotes" />

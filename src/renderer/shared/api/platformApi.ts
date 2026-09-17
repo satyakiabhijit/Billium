@@ -98,30 +98,19 @@ export interface Api {
   getSettings: () => Promise<{ success: boolean; data?: unknown }>;
   updateSettings: (data: unknown) => Promise<{ success: boolean }>;
 
-  // Layouts — Phase 5
-  getLayouts: () => Promise<{ success: boolean; data?: unknown[] }>;
-  getLayoutById: (id: number) => Promise<{ success: boolean; data?: unknown }>;
-  addLayout: (data: unknown) => Promise<{ success: boolean; data?: number }>;
-  updateLayout: (data: unknown) => Promise<{ success: boolean }>;
-  deleteLayout: (id: number) => Promise<{ success: boolean }>;
-
   // Style Profiles — Phase 5
-  getStyleProfiles: (filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
+  getStyleProfiles: (_filter?: unknown) => Promise<{ success: boolean; data?: unknown[] }>;
   getStyleProfileById: (id: number) => Promise<{ success: boolean; data?: unknown }>;
   addStyleProfile: (data: unknown) => Promise<{ success: boolean; data?: number }>;
   updateStyleProfile: (data: unknown) => Promise<{ success: boolean }>;
   deleteStyleProfile: (id: number) => Promise<{ success: boolean }>;
 
-  // Presets — Phase 6
-  getPresets: () => Promise<{ success: boolean; data?: unknown[] }>;
-  getPresetById: (id: number) => Promise<{ success: boolean; data?: unknown }>;
-  addPreset: (data: unknown) => Promise<{ success: boolean; data?: number }>;
-  updatePreset: (data: unknown) => Promise<{ success: boolean }>;
-  deletePreset: (id: number) => Promise<{ success: boolean }>;
-
   // Import/Export — Phase 3
   exportToJson: () => Promise<{ success: boolean }>;
   importFromJson: (data: unknown) => Promise<{ success: boolean }>;
+  
+  // Reports
+  getDashboardStats: () => Promise<{ success: boolean; data?: any }>;
   exportToXlsx: (entity: string) => Promise<{ success: boolean }>;
   backupDatabase: () => Promise<{ success: boolean }>;
   restoreDatabase: () => Promise<{ success: boolean }>;
@@ -219,26 +208,15 @@ export const webApi: Api = {
   updateQuote: (data) => request('/api/quotes', { method: 'PUT', body: JSON.stringify(data) }),
   deleteQuote: (id) => request(`/api/quotes/${id}`, { method: 'DELETE' }),
 
-  getLayouts: () => Promise.resolve({ success: true, data: [] }),
-  getLayoutById: () => Promise.resolve({ success: true, data: undefined }),
-  addLayout: () => Promise.resolve({ success: true }),
-  updateLayout: () => Promise.resolve({ success: true }),
-  deleteLayout: () => Promise.resolve({ success: true }),
-
-  getStyleProfiles: () => Promise.resolve({ success: true, data: [] }),
-  getStyleProfileById: () => Promise.resolve({ success: true, data: undefined }),
-  addStyleProfile: () => Promise.resolve({ success: true }),
-  updateStyleProfile: () => Promise.resolve({ success: true }),
-  deleteStyleProfile: () => Promise.resolve({ success: true }),
-
-  getPresets: () => Promise.resolve({ success: true, data: [] }),
-  getPresetById: () => Promise.resolve({ success: true, data: undefined }),
-  addPreset: () => Promise.resolve({ success: true }),
-  updatePreset: () => Promise.resolve({ success: true }),
-  deletePreset: () => Promise.resolve({ success: true }),
+  getStyleProfiles: () => request('/api/style-profiles'),
+  getStyleProfileById: (id) => request(`/api/style-profiles/${id}`),
+  addStyleProfile: (data) => request('/api/style-profiles', { method: 'POST', body: JSON.stringify(data) }),
+  updateStyleProfile: (data) => request(`/api/style-profiles/${(data as any).id}`, { method: 'PUT', body: JSON.stringify(data) }),
+  deleteStyleProfile: (id) => request(`/api/style-profiles/${id}`, { method: 'DELETE' }),
 
   exportToJson: () => Promise.resolve({ success: true }),
   importFromJson: () => Promise.resolve({ success: true }),
+  getDashboardStats: () => request('/api/reports/stats'),
   exportToXlsx: (entity) => {
     window.open(`${API_BASE}/api/export/excel/${entity}`, '_blank');
     return Promise.resolve({ success: true });

@@ -17,6 +17,7 @@ import { useCurrenciesRetrieve } from '../../shared/hooks/currencies/useCurrenci
 import { useItemsRetrieve } from '../../shared/hooks/items/useItemsRetrieve';
 import { useTaxesRetrieve } from '../../shared/hooks/taxes/useTaxesRetrieve';
 import { useSettingsRetrieve } from '../../shared/hooks/settings/useSettingsRetrieve';
+import { useStyleProfilesRetrieve } from '../../shared/hooks/styleProfiles/useStyleProfilesRetrieve';
 import { calculateInvoiceTotals, centsToDecimal, decimalToCents } from '../../shared/utils/financials';
 import { InvoiceTemplate, type InvoiceTemplateData } from '../../shared/components/pdf/InvoiceTemplate';
 
@@ -37,12 +38,14 @@ export const Form: FC<FormProps> = ({ initialData, onSave, onCancel }) => {
   const { data: taxes } = useTaxesRetrieve();
   const { data: catalogItems } = useItemsRetrieve();
   const { data: settings } = useSettingsRetrieve();
+  const { data: styleProfiles } = useStyleProfilesRetrieve();
 
   const [formData, setFormData] = useState<Partial<InvoiceAdd>>({
     clientId: undefined,
     businessId: undefined,
     currencyId: undefined,
     bankId: undefined,
+    styleProfilesId: undefined,
     date: new Date().toISOString().split('T')[0],
     issuedAt: new Date().toISOString().split('T')[0],
     dueDate: new Date().toISOString().split('T')[0],
@@ -342,6 +345,17 @@ export const Form: FC<FormProps> = ({ initialData, onSave, onCancel }) => {
           <Grid item xs={12} sm={6}>
             <TextField fullWidth type="date" label="Due Date" InputLabelProps={{ shrink: true }}
               value={formData.dueDate || ''} onChange={handleChange('dueDate')} required />
+          </Grid>
+
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select fullWidth label="Style Profile (Optional)"
+              value={formData.styleProfilesId || ''}
+              onChange={handleChange('styleProfilesId')}
+            >
+              <MenuItem value="">Default</MenuItem>
+              {styleProfiles?.map((sp: any) => <MenuItem key={sp.id} value={sp.id}>{sp.name}</MenuItem>)}
+            </TextField>
           </Grid>
         </Grid>
       </Paper>

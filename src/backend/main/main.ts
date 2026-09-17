@@ -36,6 +36,15 @@ const createWindow = () => {
   // Register IPC handlers for database dialogs
   initDBDialogsHandlers(mainWindow);
 
+  mainWindow.webContents.on('console-message', (_event, level, message, line, sourceId) => {
+    const levelName = ['verbose', 'info', 'warning', 'error'][level] ?? String(level);
+    console[level === 3 ? 'error' : 'log'](`[renderer:${levelName}] ${sourceId}:${line} ${message}`);
+  });
+
+  mainWindow.webContents.on('did-fail-load', (_event, errorCode, errorDescription, validatedURL) => {
+    console.error(`Renderer failed to load ${validatedURL}: ${errorDescription} (${errorCode})`);
+  });
+
   if (isDev) {
     mainWindow.loadURL(indexHtmlPath);
     mainWindow.webContents.openDevTools();

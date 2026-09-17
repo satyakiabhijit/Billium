@@ -20,6 +20,8 @@ export interface Invoice {
   businessId: number;
   bankId?: number;
   currencyId: number;
+  layoutId?: number;
+  styleProfilesId?: number;
 
   // Financials
   discountType?: 'amount' | 'percentage';

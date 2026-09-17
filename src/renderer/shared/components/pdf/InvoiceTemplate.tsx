@@ -39,6 +39,17 @@ export interface SnapshotCurrency {
   name?: string;
 }
 
+export interface SnapshotLayout {
+  templateName?: string;
+}
+
+export interface SnapshotStyleProfile {
+  primaryColor?: string;
+  secondaryColor?: string;
+  fontFamily?: string;
+  templateName?: string;
+}
+
 export interface InvoiceTemplateData {
   invoice: Invoice | Quote;
   items: InvoiceItem[];
@@ -46,6 +57,7 @@ export interface InvoiceTemplateData {
   business: SnapshotBusiness;
   bank: SnapshotBank;
   currency: SnapshotCurrency;
+  styleProfile?: any;
   docType: 'invoice' | 'quote';
 }
 
@@ -84,14 +96,23 @@ const statusClass = (status: string): string => {
 };
 
 export const InvoiceTemplate: FC<InvoiceTemplateProps> = ({ data }) => {
-  const { invoice, items, client, business, bank, currency, docType } = data;
+  const { invoice, items, client, business, bank, currency, styleProfile, docType } = data;
 
-  const sym = currency.symbol || currency.code || '';
+  const sym = currency?.symbol || currency?.code || '';
   const issuedAt = (invoice as Invoice).issuedAt || (invoice as any).date;
   const dueDate = invoice.dueDate;
 
+  // Use templateName from styleProfile if available, otherwise default to standard
+  const templateClass = styleProfile?.templateName ? `template-${styleProfile.templateName}` : 'template-standard';
+  
+  const customStyles = styleProfile ? {
+    '--primary-color': styleProfile.primaryColor || '#000000',
+    '--secondary-color': styleProfile.secondaryColor || '#ffffff',
+    '--font-family': styleProfile.fontFamily || 'sans-serif',
+  } as React.CSSProperties : {};
+
   return (
-    <div className="invoice-template">
+    <div className={`invoice-template ${templateClass}`} style={customStyles}>
       {/* HEADER */}
       <header className="inv-header">
         <div className="inv-header-left">
@@ -137,7 +158,7 @@ export const InvoiceTemplate: FC<InvoiceTemplateProps> = ({ data }) => {
             </span>
           </div>
         </div>
-        {currency.code && (
+        {currency?.code && (
           <div className="inv-meta-item">
             <div className="inv-meta-label">Currency</div>
             <div className="inv-meta-value">{currency.code}</div>
@@ -224,44 +245,51 @@ export const InvoiceTemplate: FC<InvoiceTemplateProps> = ({ data }) => {
             <span>{formatAmount((invoice as any).grandTotalCents, sym)}</span>
           </div>
           <div style={{ textAlign: 'right', fontSize: '10px', color: '#8a93b0', marginTop: '4px', fontStyle: 'italic' }}>
-            {currency.code} {numberToWords(Number((invoice as any).grandTotalCents) / 100, currency.code)}
+            {currency?.code} {numberToWords(Number((invoice as any).grandTotalCents) / 100, currency?.code || '')}
           </div>
         </div>
       </div>
 
       {/* BANK DETAILS */}
-      {(bank.accountName || bank.iban || bank.accountNumber) && (
+      {bank && (bank.accountHolder || bank.accountNumber || bank.upiCode || bank.qrCode) && (
         <div className="inv-bank">
           <div className="inv-bank-label">Payment Details</div>
-          <div className="inv-bank-grid">
-            {bank.name && (
-              <div className="inv-bank-field">
-                <div className="inv-bank-field-label">Bank</div>
-                <div className="inv-bank-field-value">{bank.name}</div>
-              </div>
-            )}
-            {bank.accountName && (
-              <div className="inv-bank-field">
-                <div className="inv-bank-field-label">Account Name</div>
-                <div className="inv-bank-field-value">{bank.accountName}</div>
-              </div>
-            )}
-            {bank.accountNumber && (
-              <div className="inv-bank-field">
-                <div className="inv-bank-field-label">Account No.</div>
-                <div className="inv-bank-field-value">{bank.accountNumber}</div>
-              </div>
-            )}
-            {bank.iban && (
-              <div className="inv-bank-field">
-                <div className="inv-bank-field-label">IBAN</div>
-                <div className="inv-bank-field-value">{bank.iban}</div>
-              </div>
-            )}
-            {bank.bic && (
-              <div className="inv-bank-field">
-                <div className="inv-bank-field-label">BIC / SWIFT</div>
-                <div className="inv-bank-field-value">{bank.bic}</div>
+          <div style={{ display: 'flex', gap: '24px', alignItems: 'flex-start' }}>
+            <div className="inv-bank-grid" style={{ flex: 1 }}>
+              {bank.bankName && (
+                <div className="inv-bank-field">
+                  <div className="inv-bank-field-label">Bank</div>
+                  <div className="inv-bank-field-value">{bank.bankName}</div>
+                </div>
+              )}
+              {bank.accountHolder && (
+                <div className="inv-bank-field">
+                  <div className="inv-bank-field-label">Account Name</div>
+                  <div className="inv-bank-field-value">{bank.accountHolder}</div>
+                </div>
+              )}
+              {bank.accountNumber && (
+                <div className="inv-bank-field">
+                  <div className="inv-bank-field-label">Account No.</div>
+                  <div className="inv-bank-field-value">{bank.accountNumber}</div>
+                </div>
+              )}
+              {bank.swiftCode && (
+                <div className="inv-bank-field">
+                  <div className="inv-bank-field-label">SWIFT / IFSC</div>
+                  <div className="inv-bank-field-value">{bank.swiftCode}</div>
+                </div>
+              )}
+              {bank.upiCode && (
+                <div className="inv-bank-field">
+                  <div className="inv-bank-field-label">UPI ID</div>
+                  <div className="inv-bank-field-value">{bank.upiCode}</div>
+                </div>
+              )}
+            </div>
+            {bank.qrCode && (
+              <div style={{ width: '100px', height: '100px', flexShrink: 0 }}>
+                <img src={bank.qrCode as string} alt="QR Code" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
               </div>
             )}
           </div>
