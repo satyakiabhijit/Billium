@@ -33,6 +33,8 @@ jobs:
         run: npm run build
         
       - name: Build Electron App
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx electron-builder
         
       - name: Get Package Version
