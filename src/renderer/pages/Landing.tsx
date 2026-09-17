@@ -306,13 +306,16 @@ export const LandingPage: FC = () => {
         // Fallback to mock data so the UI is visible for demonstration
         setContributors([
           { login: 'satyakiabhijit', avatar_url: 'https://avatars.githubusercontent.com/u/1?v=4', html_url: 'https://github.com/satyakiabhijit', contributions: 42 },
-          { login: 'open-source-dev', avatar_url: 'https://avatars.githubusercontent.com/u/2?v=4', html_url: '#', contributions: 12 },
-          { login: 'designer-pro', avatar_url: 'https://avatars.githubusercontent.com/u/3?v=4', html_url: '#', contributions: 5 },
+          { login: 'open-source-dev', avatar_url: 'https://avatars.githubusercontent.com/u/2?v=4', html_url: 'https://github.com/satyakiabhijit/Billium/graphs/contributors', contributions: 12 },
+          { login: 'designer-pro', avatar_url: 'https://avatars.githubusercontent.com/u/3?v=4', html_url: 'https://github.com/satyakiabhijit/Billium/graphs/contributors', contributions: 5 },
         ]);
       });
   }, []);
 
   const goToApp = () => navigate('/app');
+
+  const getReleaseAsset = (extension: string) =>
+    release?.assets?.find((asset: any) => asset.name.endsWith(extension));
 
   const scrollTo = (id: string) => {
     const el = document.getElementById(id);
@@ -344,7 +347,7 @@ export const LandingPage: FC = () => {
     logoImg: { height: 32, width: 'auto' },
     logoText: { fontSize: 20, fontWeight: 700, color: '#1a1a2e', letterSpacing: '-0.3px' },
     navLinks: { display: 'flex', gap: 32, listStyle: 'none', margin: 0, padding: 0 },
-    navLink: { fontSize: 15, fontWeight: 500, color: '#4a4a6a', cursor: 'pointer', textDecoration: 'none', transition: 'color 0.2s' },
+    navLink: { fontSize: 15, fontWeight: 500, color: '#4a4a6a', cursor: 'pointer', textDecoration: 'none', transition: 'color 0.2s', border: 'none', background: 'transparent', padding: 0 },
     navActions: { display: 'flex', gap: 12, alignItems: 'center' },
     btnOutline: {
       padding: '8px 20px', borderRadius: 6,
@@ -447,14 +450,14 @@ export const LandingPage: FC = () => {
 
       {/* NAV */}
       <nav style={styles.nav}>
-        <div style={styles.logo} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
+        <button type="button" aria-label="Back to top" style={{ ...styles.logo, border: 'none', background: 'transparent', padding: 0 }} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
           <img src={logoUrl} alt="Billium Logo" style={styles.logoImg} />
           <span style={styles.logoText}>Billium</span>
-        </div>
+        </button>
         <ul style={styles.navLinks}>
-          <li onClick={() => scrollTo('features')}><a style={styles.navLink} onMouseEnter={e => (e.currentTarget.style.color = '#004de6')} onMouseLeave={e => (e.currentTarget.style.color = '#4a4a6a')}>Features</a></li>
-          <li onClick={() => scrollTo('pricing')}><a style={styles.navLink} onMouseEnter={e => (e.currentTarget.style.color = '#004de6')} onMouseLeave={e => (e.currentTarget.style.color = '#4a4a6a')}>Pricing</a></li>
-          <li onClick={() => scrollTo('contribute')}><a style={styles.navLink} onMouseEnter={e => (e.currentTarget.style.color = '#004de6')} onMouseLeave={e => (e.currentTarget.style.color = '#4a4a6a')}>Contribute</a></li>
+          <li><button type="button" style={styles.navLink} onClick={() => scrollTo('features')} onMouseEnter={e => (e.currentTarget.style.color = '#004de6')} onMouseLeave={e => (e.currentTarget.style.color = '#4a4a6a')}>Features</button></li>
+          <li><button type="button" style={styles.navLink} onClick={() => scrollTo('pricing')} onMouseEnter={e => (e.currentTarget.style.color = '#004de6')} onMouseLeave={e => (e.currentTarget.style.color = '#4a4a6a')}>Pricing</button></li>
+          <li><button type="button" style={styles.navLink} onClick={() => scrollTo('contribute')} onMouseEnter={e => (e.currentTarget.style.color = '#004de6')} onMouseLeave={e => (e.currentTarget.style.color = '#4a4a6a')}>Contribute</button></li>
         </ul>
         <div style={styles.navActions}>
           <a href="https://github.com/satyakiabhijit/Billium" target="_blank" rel="noreferrer" style={{ ...styles.btnOutline, textDecoration: 'none', display: 'inline-block' }}
@@ -508,7 +511,7 @@ export const LandingPage: FC = () => {
                         const isPlaceholder = !release || !asset;
                         
                         return (
-                          <a key={os} href={asset ? asset.browser_download_url : '#'} style={{
+                          <a key={os} href={asset ? asset.browser_download_url : 'https://github.com/satyakiabhijit/Billium/releases'} target="_blank" rel="noreferrer" title={isPlaceholder ? `No ${os} release is available yet. Check GitHub releases.` : undefined} style={{
                             ...styles.btnHeroSecondary, 
                             padding: '10px 20px', 
                             fontSize: 14,
@@ -516,10 +519,10 @@ export const LandingPage: FC = () => {
                             background: isRecommended ? '#f5f8ff' : 'rgba(255,255,255,0.9)',
                             color: isRecommended ? '#004de6' : '#374151',
                             opacity: isPlaceholder ? 0.6 : 1,
-                            pointerEvents: isPlaceholder ? 'none' : 'auto'
+                            pointerEvents: 'auto'
                           }}>
                             {isRecommended && <span style={{ marginRight: 6 }}>⭐</span>}
-                            Download for {os}
+                            {isPlaceholder ? `View ${os} releases` : `Download for ${os}`}
                           </a>
                         );
                       })}
@@ -800,7 +803,9 @@ export const LandingPage: FC = () => {
             <p style={styles.modalSub}>Select your operating system to download the latest version ({release?.tag_name || 'v1.0.0'}).</p>
 
             <a 
-              href={release?.assets?.find((a: any) => a.name.endsWith('.exe'))?.browser_download_url || '#'}
+              href={getReleaseAsset('.exe')?.browser_download_url || 'https://github.com/satyakiabhijit/Billium/releases'}
+              target="_blank"
+              rel="noreferrer"
               style={styles.dlBtn}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; (e.currentTarget as HTMLElement).style.background = '#eff6ff'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
@@ -810,7 +815,9 @@ export const LandingPage: FC = () => {
             </a>
 
             <a 
-              href={release?.assets?.find((a: any) => a.name.endsWith('.dmg'))?.browser_download_url || '#'}
+              href={getReleaseAsset('.dmg')?.browser_download_url || 'https://github.com/satyakiabhijit/Billium/releases'}
+              target="_blank"
+              rel="noreferrer"
               style={styles.dlBtn}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; (e.currentTarget as HTMLElement).style.background = '#eff6ff'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
@@ -820,7 +827,9 @@ export const LandingPage: FC = () => {
             </a>
 
             <a 
-              href={release?.assets?.find((a: any) => a.name.endsWith('.AppImage'))?.browser_download_url || '#'}
+              href={getReleaseAsset('.AppImage')?.browser_download_url || 'https://github.com/satyakiabhijit/Billium/releases'}
+              target="_blank"
+              rel="noreferrer"
               style={styles.dlBtn}
               onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; (e.currentTarget as HTMLElement).style.background = '#eff6ff'; }}
               onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
