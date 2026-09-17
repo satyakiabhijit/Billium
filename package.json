@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Offline-first invoicing and quotation app for freelancers and small businesses. Supports Electron desktop and self-hosted web modes.",
-  "author": "Billium",
+  "author": "Billium <contact@billium.app>",
   "keywords": [
     "invoice",
     "quotation",
