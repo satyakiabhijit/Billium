@@ -1,4 +1,4 @@
-import { type FC, useEffect } from 'react';
+import { type FC, useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../state/configureStore';
 import { selectDbReady, selectIsLoading, setDbReady, enableLoading, disableLoading, addToast } from '../state/pageSlice';
 import { getApi, isWebMode } from '../shared/api/restApi';
@@ -6,11 +6,13 @@ import { SpinnerOverlay } from '../shared/components/feedback/spinner/SpinnerOve
 import { ToastContainer } from '../shared/components/feedback/toast/toastContainer';
 import { AppLayout } from './AppLayout';
 import { DatabaseChooser } from './DatabaseChooser';
+import { AppLanding } from './AppLanding';
 
 export const App: FC = () => {
   const dbReady = useAppSelector(selectDbReady);
   const isLoading = useAppSelector(selectIsLoading);
   const dispatch = useAppDispatch();
+  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem('billium_welcomed_v2'));
 
   useEffect(() => {
     const autoConnect = async () => {
@@ -53,7 +55,19 @@ export const App: FC = () => {
     <>
       {isLoading && <SpinnerOverlay />}
       <ToastContainer />
-      {dbReady ? <AppLayout /> : <DatabaseChooser />}
+      {dbReady ? <AppLayout /> : (
+        showWelcome ? (
+          <AppLanding onStart={() => {
+            localStorage.setItem('billium_welcomed_v2', 'true');
+            setShowWelcome(false);
+          }} />
+        ) : (
+          <DatabaseChooser onBackToLanding={() => {
+            setShowWelcome(true);
+            localStorage.removeItem('billium_welcomed_v2');
+          }} />
+        )
+      )}
     </>
   );
 };

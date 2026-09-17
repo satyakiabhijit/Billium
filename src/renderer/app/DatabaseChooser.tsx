@@ -2,6 +2,7 @@ import { type FC, useState } from 'react';
 import { useAppDispatch } from '../state/configureStore';
 import { setDbReady, enableLoading, disableLoading, addToast } from '../state/pageSlice';
 import { getApi, isWebMode } from '../shared/api/restApi';
+import logoUrl from '../assets/logo.png';
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 const S: Record<string, React.CSSProperties> = {
@@ -108,7 +109,11 @@ type Provider = 'neon' | 'supabase';
 type TestStatus = 'idle' | 'testing' | 'success' | 'fail';
 type OnlineStep = 'choose-provider' | 'setup';
 
-export const DatabaseChooser: FC = () => {
+interface DatabaseChooserProps {
+  onBackToLanding?: () => void;
+}
+
+export const DatabaseChooser: FC<DatabaseChooserProps> = ({ onBackToLanding }) => {
   const dispatch = useAppDispatch();
   const [mode, setMode] = useState<Mode | null>(null);
   const [onlineStep, setOnlineStep] = useState<OnlineStep>('choose-provider');
@@ -249,6 +254,23 @@ export const DatabaseChooser: FC = () => {
   // ─── Render helpers ───────────────────────────────────────────────────────
   const renderModePicker = () => (
     <>
+      {onBackToLanding && (
+        <button 
+          onClick={onBackToLanding}
+          style={{ 
+            background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', 
+            padding: 0, marginBottom: 20, fontWeight: 600, fontSize: 13,
+            display: 'flex', alignItems: 'center', gap: 4
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#004de6'}
+          onMouseLeave={e => e.currentTarget.style.color = '#6b7280'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back to Landing
+        </button>
+      )}
       <span style={S.label}>How do you want to store your data?</span>
       <div style={S.modeGrid}>
         {([
@@ -272,7 +294,6 @@ export const DatabaseChooser: FC = () => {
 
   const renderOfflineForm = () => (
     <>
-      <button style={S.backBtn} onClick={() => { setMode(null); setError(null); }}>← Back</button>
       <div style={S.section}>
         <div style={S.sectionTitle}>💻 Local SQLite Database</div>
         {error && <div style={S.alert('error')}>{error}</div>}
@@ -301,7 +322,6 @@ export const DatabaseChooser: FC = () => {
 
   const renderProviderPicker = () => (
     <>
-      <button style={S.backBtn} onClick={() => { setMode(null); setError(null); }}>← Back</button>
       <span style={S.label}>Choose your cloud PostgreSQL provider</span>
       <div style={S.providerGrid}>
         {/* NEON */}
@@ -376,10 +396,6 @@ export const DatabaseChooser: FC = () => {
 
     return (
       <>
-        <button style={S.backBtn} onClick={() => { setOnlineStep('choose-provider'); setTestStatus('idle'); setTestError(''); }}>
-          ← Back to provider selection
-        </button>
-
         {/* Step 1: Video */}
         <div style={S.section}>
           <div style={S.sectionTitle}>
@@ -490,11 +506,41 @@ export const DatabaseChooser: FC = () => {
 
   const renderContent = () => {
     if (!mode) return renderModePicker();
-    if (mode === 'offline') return renderOfflineForm();
-    if (mode === 'online') {
-      if (onlineStep === 'choose-provider') return renderProviderPicker();
-      return renderOnlineSetup();
-    }
+
+    const handleBack = () => {
+      setError(null);
+      setTestStatus('idle');
+      setTestError('');
+      
+      if (mode === 'online' && onlineStep !== 'choose-provider') {
+        setOnlineStep('choose-provider');
+      } else {
+        setMode(null);
+      }
+    };
+
+    return (
+      <>
+        <button 
+          onClick={handleBack}
+          style={{ 
+            background: 'none', border: 'none', color: '#6b7280', cursor: 'pointer', 
+            padding: 0, marginBottom: 20, fontWeight: 600, fontSize: 13,
+            display: 'flex', alignItems: 'center', gap: 4
+          }}
+          onMouseEnter={e => e.currentTarget.style.color = '#004de6'}
+          onMouseLeave={e => e.currentTarget.style.color = '#6b7280'}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M19 12H5M12 19l-7-7 7-7"/>
+          </svg>
+          Back
+        </button>
+        {mode === 'offline' && renderOfflineForm()}
+        {mode === 'online' && onlineStep === 'choose-provider' && renderProviderPicker()}
+        {mode === 'online' && onlineStep !== 'choose-provider' && renderOnlineSetup()}
+      </>
+    );
   };
 
   return (
@@ -503,8 +549,8 @@ export const DatabaseChooser: FC = () => {
         {/* Header */}
         <div style={S.header}>
           <div style={S.logoWrap}>
-            <img src="/billium logo.png" alt="Billium" style={S.logoImg} />
-          </div>
+          <img src={logoUrl} alt="Billium Logo" style={S.logoImg} />
+        </div>
           <h1 style={S.headerTitle}>Welcome to Billium</h1>
           <p style={S.headerSub}>
             {!mode ? 'Choose how you want to store your data' :

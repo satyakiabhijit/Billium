@@ -44,7 +44,7 @@ const appChildren = [
 
 // Shared routes for both Electron (hash) and browser
 const routes = [
-  { path: '/', element: <LandingPage /> },
+  { path: '/', element: isElectron ? <Navigate to="/app" replace /> : <LandingPage /> },
   {
     path: '/app',
     element: <App />,

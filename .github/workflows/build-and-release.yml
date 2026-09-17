@@ -32,7 +32,24 @@ jobs:
       - name: Build Application
         run: npm run build
         
-      - name: Build and Publish Electron App
+      - name: Build Electron App
+        run: npx electron-builder
+        
+      - name: Get Package Version
+        id: package-version
+        shell: bash
+        run: echo "version=$(node -p "require('./package.json').version")" >> $GITHUB_OUTPUT
+        
+      - name: Create Release and Upload Assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v${{ steps.package-version.outputs.version }}
+          name: Billium v${{ steps.package-version.outputs.version }}
+          files: |
+            release/*.exe
+            release/*.dmg
+            release/*.AppImage
+          draft: false
+          prerelease: false
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx electron-builder --publish always
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

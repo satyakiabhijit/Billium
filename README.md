@@ -1,7 +1,18 @@
-﻿# Billium
+# Billium
 
 **Billium** is an open-source, offline-first invoicing and quotation application built for freelancers and small businesses. It runs as a native Electron desktop app *or* as a self-hosted web application — no cloud accounts, no subscriptions, total data privacy.
 
+### 🌐 Download & Live Demo
+- **Website:** [billium.vercel.app](https://billium.vercel.app)
+- **Download App:** Go to the [Releases](https://github.com/satyakiabhijit/Billium/releases) page to download the latest `.exe` (Windows), `.dmg` (Mac), or `.AppImage` (Linux) installer.
+
+---
+
+## 📸 Screenshots
+
+| Website |
+|---|
+| ![Website](docs/images/dashboard.png)
 ---
 
 ## ✨ Features
@@ -198,9 +209,13 @@ The key architectural feature of Billium is the **transparent dual-mode API**. T
            Shared Services
            (services/*.ts)
                   │
-            DatabaseAdapter
-           (SQLite / PostgreSQL)
+          ┌───────┴───────┐
+          │               │
+      SQLite         PostgreSQL
+    (Offline DB)    (Online DB)
 ```
+
+This ensures that the app works perfectly **offline as a standalone desktop app** using local SQLite, and works seamlessly **online as a hosted web-app** using a central PostgreSQL database.
 
 ---
 

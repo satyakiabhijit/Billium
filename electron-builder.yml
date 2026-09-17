@@ -4,10 +4,6 @@ productName: Billium
 directories:
   output: release
 
-publish:
-  provider: github
-  owner: satyakiabhijit
-  repo: Billium
 
 files:
   - dist-fe/**
@@ -21,8 +17,8 @@ extraMetadata:
 forceCodeSigning: false
 
 win:
-  target:
-    - nsis
+  target: nsis
+  artifactName: Billium-Windows-Setup.${ext}
 
 nsis:
   oneClick: true
@@ -31,12 +27,11 @@ nsis:
   allowToChangeInstallationDirectory: false
 
 mac:
-  target:
-    - dmg
+  target: dmg
+  artifactName: Billium-Mac-Installer.${ext}
   category: public.app-category.business
 
 linux:
-  target:
-    - AppImage
-    - deb
+  target: AppImage
+  artifactName: Billium-Linux.${ext}
   category: Office

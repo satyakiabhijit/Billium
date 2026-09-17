@@ -1,5 +1,7 @@
 import { type FC, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { App } from '../app/App';
+import logoUrl from '../assets/logo.png';
 import * as THREE from 'three';
 
 interface Contributor {
@@ -15,6 +17,7 @@ export const LandingPage: FC = () => {
   const [contributors, setContributors] = useState<Contributor[]>([]);
   const [release, setRelease] = useState<any>(null);
   const [osName, setOsName] = useState<'Windows' | 'Mac' | 'Linux' | 'Unknown'>('Unknown');
+  const [isDownloadModalOpen, setDownloadModalOpen] = useState(false);
 
   useEffect(() => {
     // Detect OS
@@ -406,6 +409,35 @@ export const LandingPage: FC = () => {
       transition: 'all 0.25s',
       backdropFilter: 'blur(10px)',
     },
+    modalOverlay: {
+      position: 'fixed' as const, top: 0, left: 0, right: 0, bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 9999,
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      backdropFilter: 'blur(5px)',
+    },
+    modalContent: {
+      background: '#fff', borderRadius: 20, padding: 32,
+      width: '100%', maxWidth: 440, boxShadow: '0 25px 50px -12px rgba(0,0,0,0.25)',
+      position: 'relative' as const,
+      display: 'flex', flexDirection: 'column' as const, boxSizing: 'border-box' as const,
+    },
+    modalTitle: { fontSize: 24, fontWeight: 800, margin: '0 0 8px 0', color: '#111827' },
+    modalSub: { fontSize: 14, color: '#6b7280', margin: '0 0 24px 0', lineHeight: 1.5 },
+    modalClose: {
+      position: 'absolute' as const, top: 16, right: 16,
+      background: 'none', border: 'none', fontSize: 24, color: '#9ca3af',
+      cursor: 'pointer',
+    },
+    dlBtn: {
+      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      width: '100%', padding: '16px 20px', borderRadius: 12,
+      border: '2px solid #e5e7eb', background: '#fafafa',
+      marginBottom: 12, cursor: 'pointer', transition: 'all 0.2s',
+      color: '#374151', textDecoration: 'none', boxSizing: 'border-box' as const,
+    },
+    dlBtnHover: { borderColor: '#004de6', background: '#eff6ff' },
+    dlIcon: { fontSize: 24, display: 'flex', alignItems: 'center', gap: 12 },
+    dlText: { fontWeight: 600, fontSize: 16 },
   };
 
   return (
@@ -416,7 +448,7 @@ export const LandingPage: FC = () => {
       {/* NAV */}
       <nav style={styles.nav}>
         <div style={styles.logo} onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}>
-          <img src="/billium logo.png" alt="Billium Logo" style={styles.logoImg} />
+          <img src={logoUrl} alt="Billium Logo" style={styles.logoImg} />
           <span style={styles.logoText}>Billium</span>
         </div>
         <ul style={styles.navLinks}>
@@ -429,10 +461,11 @@ export const LandingPage: FC = () => {
             onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#004de6'; (e.currentTarget as HTMLElement).style.color = '#fff'; }}
             onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = '#004de6'; }}
           >GitHub ★</a>
-          <button style={styles.btnPrimary} onClick={goToApp}
+          <button style={styles.btnPrimary}
+            onClick={() => setDownloadModalOpen(true)}
             onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-1px)')}
             onMouseLeave={e => (e.currentTarget.style.transform = 'translateY(0)')}
-          >Get Started Free</button>
+          >Download App</button>
         </div>
       </nav>      {/* HERO */}
       <section style={{ position: 'relative', zIndex: 10 }}>
@@ -446,15 +479,17 @@ export const LandingPage: FC = () => {
               <span style={styles.h1Accent}>invoice your clients.</span>
             </h1>
             <p style={styles.heroSub}>
-              Create professional invoices and quotes in seconds. Manage clients, track payments, and export beautiful PDFs - all offline, all free, forever.
+              Create professional invoices and quotes in seconds. Manage clients, track payments, and export beautiful PDFs.<br/>
+              <b>Works 100% Offline as a Desktop App</b> or <b>Online as a Self-Hosted Web App.</b><br/>
+              Free forever. No cloud subscriptions. Total data privacy.
             </p>
             <div style={styles.heroCta}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'center' }}>
-                <button style={styles.btnHero} onClick={goToApp}
+                <button style={{...styles.btnHero, opacity: 0.7, cursor: 'not-allowed'}} disabled
                   onMouseEnter={e => { (e.target as HTMLElement).style.transform = 'translateY(-2px)'; (e.target as HTMLElement).style.boxShadow = '0 8px 30px rgba(0,77,230,0.45)'; }}
                   onMouseLeave={e => { (e.target as HTMLElement).style.transform = 'translateY(0)'; (e.target as HTMLElement).style.boxShadow = '0 4px 20px rgba(0,77,230,0.35)'; }}
                 >
-                  Start Web App Free →
+                  Start Web App Free (Coming Soon)
                 </button>
                 
                 {(release || true) && (
@@ -478,21 +513,25 @@ export const LandingPage: FC = () => {
                             padding: '10px 20px', 
                             fontSize: 14,
                             borderColor: isRecommended ? '#004de6' : 'rgba(0,0,0,0.15)',
-                            background: isRecommended ? '#f0f5fa' : 'rgba(255,255,255,0.9)',
+                            background: isRecommended ? '#f5f8ff' : 'rgba(255,255,255,0.9)',
                             color: isRecommended ? '#004de6' : '#374151',
                             opacity: isPlaceholder ? 0.6 : 1,
-                            cursor: isPlaceholder ? 'not-allowed' : 'pointer'
-                          }}
-                            title={isPlaceholder ? 'Release is building on GitHub...' : `Download for ${os}`}
-                            onClick={e => { if(isPlaceholder) e.preventDefault(); }}
-                            onMouseEnter={e => { if(!isPlaceholder) { (e.currentTarget as HTMLElement).style.background = isRecommended ? '#e0ebff' : '#fff'; (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; } }}
-                            onMouseLeave={e => { if(!isPlaceholder) { (e.currentTarget as HTMLElement).style.background = isRecommended ? '#f0f5fa' : 'rgba(255,255,255,0.9)'; (e.currentTarget as HTMLElement).style.borderColor = isRecommended ? '#004de6' : 'rgba(0,0,0,0.15)'; } }}
-                          >
+                            pointerEvents: isPlaceholder ? 'none' : 'auto'
+                          }}>
                             {isRecommended && <span style={{ marginRight: 6 }}>⭐</span>}
                             Download for {os}
                           </a>
                         );
                       })}
+                      <div style={{
+                        ...styles.btnHeroSecondary, 
+                        padding: '10px 20px', 
+                        fontSize: 14,
+                        opacity: 0.6,
+                        cursor: 'not-allowed',
+                      }}>
+                        iOS & Android (Coming Soon)
+                      </div>
                     </div>
                     <div style={{ fontSize: 12, color: '#9ca3af', marginTop: 8 }}>
                       {release ? `Latest Release: ${release.tag_name}` : '⚙️ GitHub Action is building the first release...'}
@@ -751,6 +790,47 @@ export const LandingPage: FC = () => {
           MIT License · Made with ❤️ · <a href="https://github.com/satyakiabhijit/Billium" style={{ color: '#004de6', textDecoration: 'none', fontWeight: 600 }}>GitHub</a>
         </div>
       </footer>
+
+      {/* DOWNLOAD MODAL */}
+      {isDownloadModalOpen && (
+        <div style={styles.modalOverlay} onClick={() => setDownloadModalOpen(false)}>
+          <div style={styles.modalContent} onClick={e => e.stopPropagation()}>
+            <button style={styles.modalClose} onClick={() => setDownloadModalOpen(false)}>&times;</button>
+            <h2 style={styles.modalTitle}>Download Billium</h2>
+            <p style={styles.modalSub}>Select your operating system to download the latest version ({release?.tag_name || 'v1.0.0'}).</p>
+
+            <a 
+              href={release?.assets?.find((a: any) => a.name.endsWith('.exe'))?.browser_download_url || '#'}
+              style={styles.dlBtn}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; (e.currentTarget as HTMLElement).style.background = '#eff6ff'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
+            >
+              <div style={styles.dlIcon}>🪟 <span style={styles.dlText}>Windows</span></div>
+              <span style={{ fontSize: 13, color: '#9ca3af' }}>.exe</span>
+            </a>
+
+            <a 
+              href={release?.assets?.find((a: any) => a.name.endsWith('.dmg'))?.browser_download_url || '#'}
+              style={styles.dlBtn}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; (e.currentTarget as HTMLElement).style.background = '#eff6ff'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
+            >
+              <div style={styles.dlIcon}>🍎 <span style={styles.dlText}>Mac</span></div>
+              <span style={{ fontSize: 13, color: '#9ca3af' }}>.dmg</span>
+            </a>
+
+            <a 
+              href={release?.assets?.find((a: any) => a.name.endsWith('.AppImage'))?.browser_download_url || '#'}
+              style={styles.dlBtn}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.borderColor = '#004de6'; (e.currentTarget as HTMLElement).style.background = '#eff6ff'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.borderColor = '#e5e7eb'; (e.currentTarget as HTMLElement).style.background = '#fafafa'; }}
+            >
+              <div style={styles.dlIcon}>🐧 <span style={styles.dlText}>Linux</span></div>
+              <span style={{ fontSize: 13, color: '#9ca3af' }}>.AppImage</span>
+            </a>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

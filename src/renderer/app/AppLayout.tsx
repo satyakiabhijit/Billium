@@ -32,6 +32,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { useAppDispatch } from '../state/configureStore';
 import { setDbReady } from '../state/pageSlice';
 import { getApi } from '../shared/api/restApi';
+import logoUrl from '../assets/logo.png';
 
 const DRAWER_WIDTH = 240;
 
@@ -70,7 +71,7 @@ export const AppLayout: FC = () => {
   const drawer = (
     <Box sx={{ overflow: 'auto' }}>
       <Toolbar sx={{ justifyContent: 'center', gap: 1 }}>
-        <img src="/billium logo.png" alt="Billium Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
+        <img src={logoUrl} alt="Billium Logo" style={{ width: 32, height: 32, objectFit: 'contain' }} />
         <Typography variant="h6" noWrap component="div" sx={{ fontWeight: 700 }}>
           Billium
         </Typography>
