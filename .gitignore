@@ -2,7 +2,7 @@ node_modules/
 dist-fe/
 dist-be/
 release/
-data/
+/data/
 .env
 .env.*
 !.env.*.example
